@@ -1,0 +1,166 @@
+﻿@using Arac_Kiralama.Models.Dtos.Cars
+@model List<CarResponseDto>
+
+
+
+@{
+    ViewData["Title"] = "Araç Kiralama";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sol Taraf - Filtreleme Seçenekleri -->
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Filtreleme Seçenekleri</h5>
+                </div>
+                <div class="card-body">
+                    <form id="filterForm" method="get" action="@Url.Action("Index", "Cars")">
+                        <div class="mb-3">
+                            <label for="vitesTipi" class="form-label fw-bold">Vites Tipi</label>
+                            <select class="form-select" id="vitesTipi" name="vitesTipi">
+                                <option value="">Tümü</option>
+                                @foreach (var vitesTipi in ViewBag.Transmissions)
+                                {
+                                    <option value="@vitesTipi" selected="@(vitesTipi == ViewBag.SelectedVitesTipi)">@vitesTipi</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="yakitTipi" class="form-label fw-bold">Yakıt Tipi</label>
+                            <select class="form-select" id="yakitTipi" name="yakitTipi">
+                                <option value="">Tümü</option>
+                                @foreach (var yakitTipi in ViewBag.Fuels)
+                                {
+                                    <option value="@yakitTipi" selected="@(yakitTipi == ViewBag.SelectedYakitTipi)">@yakitTipi</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Günlük Fiyat Aralığı</label>
+                            <div class="d-flex gap-2">
+                                <input type="number" class="form-control" id="minFiyat" name="minFiyat" placeholder="Min ₺" value="@ViewBag.SelectedMinFiyat">
+                                <input type="number" class="form-control" id="maxFiyat" name="maxFiyat" placeholder="Max ₺" value="@ViewBag.SelectedMaxFiyat">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="renk" class="form-label fw-bold">Renk</label>
+                            <select class="form-select" id="renk" name="renk">
+                                <option value="">Tümü</option>
+                                @foreach (var renk in ViewBag.Colors)
+                                {
+                                    <option value="@renk" selected="@(renk == ViewBag.SelectedRenk)">@renk</option>
+                                }
+                            </select>
+                        </div>
+
+                        <input type="hidden" id="siralamaKriteri" name="siralamaKriteri" value="@ViewBag.SelectedSiralamaKriteri" />
+                        
+                        <button type="submit" class="btn btn-primary w-100">Filtrele</button>
+                        <a href="@Url.Action("Index", "Cars")" class="btn btn-outline-secondary w-100 mt-2">Filtreleri Temizle</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Taraf - Araç Kartları -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3>Araç Listesi</h3>
+                <div class="d-flex gap-2 align-items-center">
+                    <label for="sirala" class="form-label mb-0">Sırala:</label>
+                    <select class="form-select form-select-sm" id="sirala" style="width: auto;">
+                        <option value="fiyatArtan" selected="@(ViewBag.SelectedSiralamaKriteri == "fiyatArtan")">Fiyat (Artan)</option>
+                        <option value="fiyatAzalan" selected="@(ViewBag.SelectedSiralamaKriteri == "fiyatAzalan")">Fiyat (Azalan)</option>
+                        @* Model yılı için bir alan eklenirse bu seçenekler aktif edilebilir
+                        <option value="modelYeni" selected="@(ViewBag.SelectedSiralamaKriteri == "modelYeni")">Model (Yeni)</option>
+                        <option value="modelEski" selected="@(ViewBag.SelectedSiralamaKriteri == "modelEski")">Model (Eski)</option>
+                        *@
+                    </select>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="aracListesi">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var car in Model)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm">
+                                @if (!string.IsNullOrEmpty(car.ImageUrl))
+                                {
+                                    <img src="@car.ImageUrl" class="card-img-top" alt="@car.Name" style="height: 200px; object-fit: cover;">
+                                }
+                                else
+                                {
+                                    <img src="https://via.placeholder.com/350x200?text=@car.Name" class="card-img-top" alt="@car.Name" style="height: 200px; object-fit: cover;">
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@car.Name</h5>
+                                    <div class="card-text">
+                                        <div class="row mb-2">
+                                            <div class="col-6">
+                                                <small class="text-muted">Vites Tipi:</small>
+                                                <p class="mb-0">@car.TransmissionName</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Yakıt Tipi:</small>
+                                                <p class="mb-0">@car.FuelName</p>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <div class="col-6">
+                                                <small class="text-muted">Renk:</small>
+                                                <p class="mb-0">@car.ColorName</p>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Kilometre:</small>
+                                                <p class="mb-0">@car.Kilometer.ToString("N0") km</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-primary fs-5">@car.DailyPrice.ToString("N0") ₺</span>
+                                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-primary">Detaylar</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i> Henüz araç bulunmamaktadır.
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Sonuç Bulunamadı Mesajı -->
+            @if (Model != null && !Model.Any())
+            {
+                <div id="noResultMessage" class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle me-2"></i> Arama kriterlerinize uygun araç bulunamadı.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Sıralama değiştiğinde formu gönder
+            $("#sirala").on("change", function () {
+                $("#siralamaKriteri").val($(this).val());
+                $("#filterForm").submit();
+            });
+        });
+    </script>
+}

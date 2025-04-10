@@ -1,0 +1,97 @@
+﻿@using Arac_Kiralama.Models.Dtos.Cars
+@model CarAddRequestDto
+
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-dark fw-bold">Yeni Araç Ekle</h2>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form asp-controller="Cars" asp-action="Add" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Name" class="form-label fw-semibold">Araç Adı</label>
+                        <input asp-for="Name" class="form-control form-control-lg border-0 bg-light" placeholder="Araç adını giriniz" />
+                        <span asp-validation-for="Name" class="text-danger mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Kilometer" class="form-label fw-semibold">Kilometre</label>
+                        <input asp-for="Kilometer" type="number" class="form-control form-control-lg border-0 bg-light" placeholder="Kilometre bilgisini giriniz" />
+                        <span asp-validation-for="Kilometer" class="text-danger mt-1 d-block"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="DailyPrice" class="form-label fw-semibold">Günlük Fiyat (₺)</label>
+                        <input asp-for="DailyPrice" type="number" step="0.01" class="form-control form-control-lg border-0 bg-light" placeholder="Günlük kiralama fiyatını giriniz" />
+                        <span asp-validation-for="DailyPrice" class="text-danger mt-1 d-block"></span>
+                    </div>
+                  
+                    <div class="col-md-6 mb-4">
+                        <label class="form-label fw-semibold">Araç Görseli</label>
+                        <div class="bg-light p-3 rounded">
+                            <img src="@(!string.IsNullOrEmpty(Model?.ImageUrl) ? Model.ImageUrl : "/images/default-car.jpg")" alt="Araç Görseli" />
+
+                            <p class="mb-0 mt-2 text-muted small">Tüm araçlar için varsayılan logo kullanılacaktır.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="BrandId" class="form-label fw-semibold">Marka</label>
+                        <select asp-for="BrandId" asp-items="@ViewBag.Brands" class="form-select form-select-lg border-0 bg-light">
+                            <option value="">Marka seçiniz</option>
+                        </select>
+                        <span asp-validation-for="BrandId" class="text-danger mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="ColorId" class="form-label fw-semibold">Renk</label>
+                        <select asp-for="ColorId" asp-items="@ViewBag.Colors" class="form-select form-select-lg border-0 bg-light">
+                            <option value="">Renk seçiniz</option>
+                        </select>
+                        <span asp-validation-for="ColorId" class="text-danger mt-1 d-block"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="TransmissionId" class="form-label fw-semibold">Vites Tipi</label>
+                        <select asp-for="TransmissionId" asp-items="@ViewBag.Transmissions" class="form-select form-select-lg border-0 bg-light">
+                            <option value="">Vites tipi seçiniz</option>
+                        </select>
+                        <span asp-validation-for="TransmissionId" class="text-danger mt-1 d-block"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="FuelId" class="form-label fw-semibold">Yakıt Tipi</label>
+                        <select asp-for="FuelId" asp-items="@ViewBag.Fuels" class="form-select form-select-lg border-0 bg-light">
+                            <option value="">Yakıt tipi seçiniz</option>
+                        </select>
+                        <span asp-validation-for="FuelId" class="text-danger mt-1 d-block"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary px-4 py-2">
+                        <i class="bi bi-check-circle me-2"></i>Kaydet
+                    </button>
+                    <a asp-action="Index" class="btn btn-light px-4 py-2">
+                        <i class="bi bi-x-circle me-2"></i>İptal
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

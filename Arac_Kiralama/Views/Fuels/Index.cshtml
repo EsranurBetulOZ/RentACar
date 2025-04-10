@@ -1,0 +1,73 @@
+﻿@using Arac_Kiralama.Models.Dtos.Fuels
+@model List<FuelResponseDto>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-dark fw-bold">Yakıt Tipleri</h2>
+    <a asp-controller="Fuels" asp-action="Add" class="btn btn-add">
+        <span class="btn-icon">
+            <i class="bi bi-plus"></i>
+        </span>
+        <span class="btn-text">Yakıt Tipi Ekle</span>
+    </a>
+</div>
+
+<form method="get" asp-action="Index" class="mb-3 d-flex align-items-center">
+    <input type="text" name="search" class="form-control me-2 rounded-pill" placeholder="Marka adına göre ara..." value="@Context.Request.Query["search"]" />
+    <button type="submit" class="btn btn-outline-primary">Ara</button>
+</form>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0 custom-table">
+            <thead>
+                <tr class="bg-primary bg-opacity-10">
+                    <th scope="col" class="px-4 py-3 text-primary fw-semibold border-bottom">ID</th>
+                    <th scope="col" class="px-4 py-3 text-primary fw-semibold border-bottom">Yakıt Tipi</th>
+                  
+                    <th scope="col" class="px-4 py-3 text-primary fw-semibold border-bottom">Ekleme Tarihi</th>
+                    <th scope="col" class="px-4 py-3 text-primary fw-semibold border-bottom">Güncellenme Tarihi</th>
+                    <th scope="col" class="px-4 py-3 text-primary fw-semibold border-bottom"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        var item = Model[i];
+                        var rowClass = i % 2 == 0 ? "" : "table-light";
+
+                        <tr class="@rowClass">
+                            <td class="px-4 py-3">@item.Id</td>
+                            <td class="px-4 py-3 fw-medium">@item.Name</td>
+                            <td class="px-4 py-3">@item.CreatedDate</td>
+                            <td class="px-4 py-3">@item.UpdatedDate</td>
+                            <td class="px-4 py-3">
+                                <a asp-controller="Fuels" asp-action="Update" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning rounded-pill me-2">
+                                    <i class="bi bi-pencil-square"></i> Güncelle
+                                </a>
+                                <a asp-controller="Fuels" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger rounded-pill">
+                                    <i class="bi bi-trash"></i> Sil
+                                </a>
+                            </td>
+                        </tr>
+
+                    }
+             
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">
+                            <i class="bi bi-exclamation-circle fs-4 d-block mb-2"></i>
+                            Yakıt Tipi Ekleyin.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+

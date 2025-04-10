@@ -1,0 +1,73 @@
+﻿<header class="rental-header mb-4">
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/images/aksLogo.png" alt="Logo" class="logo-img" />
+            </a>
+
+            <!-- Mobil Menü Butonu -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="bi bi-list"></i>
+            </button>
+
+            <!-- Menü İçeriği -->
+            <div class="navbar-collapse collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-house-door"></i> Anasayfa
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-plus-circle"></i> Ekleme İşlemleri
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Cars" asp-action="Add">
+                                    Araç Ekleme
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Colors" asp-action="Index">
+                                    Renk Ekleme
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Fuels" asp-action="Index">
+                                    Yakıt Tipi Ekleme
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Transmissions" asp-action="Index">
+                                    Vites Tipi Ekleme
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Brands" asp-action="Index">
+                                    Marka/Model Ekleme
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <!-- Sağ Taraf Butonları -->
+                <div class="navbar-buttons ms-auto">
+                    <a asp-controller="Reservation" asp-action="New" class="btn btn-primary reservation-btn">
+                        <i class="bi bi-calendar-check"></i> Rezervasyon Yap
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-outline-secondary ms-2 login-btn">
+                        <i class="bi bi-person"></i> Giriş
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+
+  
