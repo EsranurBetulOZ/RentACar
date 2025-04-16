@@ -9,5 +9,6 @@ namespace Arac_Kiralama.Repository.Repositories.Abstracts
 {
     public interface ITransmissionRepository : IRepository<Transmission, int>
     {
+        bool ExistByTransmissionName(string name);
     }
 }

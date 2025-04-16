@@ -4,10 +4,12 @@ using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Repository.Repositories.Abstracts;
 using Arac_Kiralama.Repository.Repositories.Concretes;
 using Arac_Kiralama.Service.Abstracts;
+using Arac_Kiralama.Service.Exceptions.Types;
 using Arac_Kiralama.Service.Mappers.Brands;
 using Arac_Kiralama.Service.Mappers.Colors;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,14 +29,23 @@ namespace Arac_Kiralama.Service.Concretes
 
         public void Add(ColorAddRequestDto dto)
         {
+            bool isPresent = _colorRepository.ExistByColorName(dto.Name);
+            if (isPresent) {
+                throw new BusinessException("Renk Adı aynı olmamalıdır");
+            }
             Color color = _colorMapper.ConvertToEntity(dto);
             _colorRepository.Add(color);
         }
 
         public void Delete(int id)
         {
+            
             Color? color = _colorRepository.GetById(id);
-            //toDo: Eğer ilgili color bulunamazsa exeption Handling mekanizması 
+            if (color is null)
+            {
+                throw new NotFoundException("İlgili Renk bulunamadı.");
+            }
+           
             _colorRepository.Delete(color!);
         }
 

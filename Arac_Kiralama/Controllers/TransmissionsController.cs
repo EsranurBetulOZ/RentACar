@@ -1,11 +1,13 @@
-﻿using Arac_Kiralama.Models.Dtos.Transmissions;
+﻿using Arac_Kiralama.Models;
+using Arac_Kiralama.Models.Dtos.Transmissions;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Concretes;
+using Arac_Kiralama.Service.Exceptions.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Arac_Kiralama.Controllers
 {
-    public class TransmissionsController : Controller
+    public class TransmissionsController : CustomBaseController
     {
         private readonly ITransmissionService _transmissionService;
 
@@ -27,10 +29,23 @@ namespace Arac_Kiralama.Controllers
         [HttpPost]
         public IActionResult Add(TransmissionAddRequestDto transmission)
         {
+            try
+            {
+                _transmissionService.Add(transmission);
 
-            _transmissionService.Add(transmission);
+                return RedirectToAction("Index", "Transmissions");
+            }
 
-            return RedirectToAction("Index", "Transmissions");
+            catch (BusinessException ex)
+            {
+                ExceptionViewModel viewModel = new()
+                {
+                    Exception = ex,
+                    Controller = "Transmissions",
+                    Action = "Index"
+                };
+                return BusinessError(viewModel);
+            }
             
         }
         [HttpGet]
@@ -50,8 +65,23 @@ namespace Arac_Kiralama.Controllers
         [HttpGet]
         public IActionResult Delete(int id)
         {
-            _transmissionService.Delete(id);
-            return RedirectToAction("Index", "Transmissions");
+            try
+            {
+                _transmissionService.Delete(id);
+                return RedirectToAction("Index", "Transmissions");
+            }
+           
+
+              catch (NotFoundException ex)
+        {
+                ExceptionViewModel vm = new()
+                {
+                    Exception = ex,
+                    Controller = "Transmissions",
+                    Action = "Index"
+                };
+                return NotFoundError(vm);
+            }
         }
 
     }

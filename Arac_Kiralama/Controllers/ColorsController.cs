@@ -1,12 +1,14 @@
-﻿using Arac_Kiralama.Models.Dtos.Brands;
+﻿using Arac_Kiralama.Models;
+using Arac_Kiralama.Models.Dtos.Brands;
 using Arac_Kiralama.Models.Dtos.Colors;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Concretes;
+using Arac_Kiralama.Service.Exceptions.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Arac_Kiralama.Controllers;
 
-public class ColorsController : Controller
+public class ColorsController : CustomBaseController
 {
     private readonly IColorService _colorService;
 
@@ -29,10 +31,23 @@ public class ColorsController : Controller
     public IActionResult Add(ColorAddRequestDto color)
     {
 
+        try
+        {
+            _colorService.Add(color);
 
-        _colorService.Add(color);
+            return RedirectToAction("Index", "Colors");
+        }
+        catch (BusinessException ex) {
+            ExceptionViewModel viewModel = new()
+            {
+                Exception = ex,
+                Controller="Colors",
+                Action="Index"
+            };
 
-        return RedirectToAction("Index", "Colors");
+		return BusinessError(viewModel);
+        }
+     
 
 
 
@@ -53,8 +68,18 @@ public class ColorsController : Controller
     [HttpGet]
     public IActionResult Delete(int id)
     {
-        _colorService.Delete(id);
-        return RedirectToAction("Index", "Colors");
+        try {
+			_colorService.Delete(id);
+			return RedirectToAction("Index", "Colors");
+		}
+        catch (NotFoundException ex) {
+            ExceptionViewModel vm = new()
+            {
+               Exception=ex,Controller="Colors",Action="Index"
+            };
+            return NotFoundError(vm);
+        }
+      
     }
 
 }

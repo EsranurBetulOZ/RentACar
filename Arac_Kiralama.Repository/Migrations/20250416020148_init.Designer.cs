@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Arac_Kiralama.Repository.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    [Migration("20250410093721_init")]
+    [Migration("20250416020148_init")]
     partial class init
     {
         /// <inheritdoc />

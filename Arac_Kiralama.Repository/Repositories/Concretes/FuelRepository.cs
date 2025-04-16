@@ -27,6 +27,11 @@ namespace Arac_Kiralama.Repository.Repositories.Concretes
             return fuel;
         }
 
+        public bool ExistByFuelName(string name)
+        {
+            return context.Fuels.Any(x => x.Name == name);
+        }
+
         public List<Fuel> GetAll()
         {
             return context.Fuels.ToList();

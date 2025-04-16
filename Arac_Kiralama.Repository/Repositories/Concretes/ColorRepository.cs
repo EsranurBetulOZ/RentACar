@@ -26,6 +26,11 @@ namespace Arac_Kiralama.Repository.Repositories.Concretes
             return color;
         }
 
+        public bool ExistByColorName(string name)
+        {
+            return context.Colors.Any(x=>x.Name==name);
+        }
+
         public List<Color> GetAll()
         {
             return context.Colors.ToList();

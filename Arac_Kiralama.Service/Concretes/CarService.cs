@@ -4,6 +4,7 @@ using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Repository.Repositories.Abstracts;
 using Arac_Kiralama.Repository.Repositories.Concretes;
 using Arac_Kiralama.Service.Abstracts;
+using Arac_Kiralama.Service.Helpers.Cloudinary;
 using Arac_Kiralama.Service.Mappers.Brands;
 using Arac_Kiralama.Service.Mappers.Cars;
 using System;
@@ -16,18 +17,22 @@ namespace Arac_Kiralama.Service.Concretes
 {
     public class CarService : ICarService
     {
+        private readonly IFileService _fileService;
         private readonly ICarRepository _carRepository;
         private readonly ICarMapper _carMapper;
 
-        public CarService(ICarRepository carRepository, ICarMapper carMapper)
+        public CarService(IFileService fileService, ICarRepository carRepository, ICarMapper carMapper)
         {
+            _fileService = fileService;
             _carRepository = carRepository;
             _carMapper = carMapper;
         }
 
-        public void Add(CarAddRequestDto dto)
+        public async void Add(CarAddRequestDto dto)
         {
             Car car = _carMapper.ConvertToEntity(dto);
+            string url = _fileService.UploadImage(dto.File, folderName: "cars-image");
+            car.ImageUrl = url;
             _carRepository.Add(car);
         }
 

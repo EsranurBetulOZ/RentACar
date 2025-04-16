@@ -3,12 +3,13 @@ using Arac_Kiralama.Models.Dtos.Brands;
 using Arac_Kiralama.Repository.Repositories.Concretes;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Concretes;
+using Arac_Kiralama.Service.Exceptions.Types;
 using Microsoft.AspNetCore.Mvc;
 
 
 namespace Arac_Kiralama.Controllers;
 
-public class BrandsController : Controller
+public class BrandsController : CustomBaseController
 {
     private readonly IBrandService _brandService;
 
@@ -44,14 +45,25 @@ public class BrandsController : Controller
     public IActionResult Add(BrandAddRequestDto brand)
     {
 
+        try
+        {
+            _brandService.Add(brand);
 
+            return RedirectToAction("Index", "Brands");
+        }
+        catch (BusinessException ex)
+        {
+            ExceptionViewModel viewModel = new()
+            {
+                Exception = ex,
+                Controller = "Brands",
+                Action = "Index"
+            };
 
-        _brandService.Add(brand);
+            return BusinessError(viewModel);
 
-        return RedirectToAction("Index", "Brands");
-
-
-        //return View(brand);
+            //return View(brand);
+        }
     }
     //public IActionResult BrandNameContains(string brandName)
     //{
@@ -75,8 +87,21 @@ public class BrandsController : Controller
     [HttpGet]
     public IActionResult Delete(int id)
     {
-        _brandService.Delete(id);
-        return RedirectToAction("Index", "Brands");
+        try
+        {
+            _brandService.Delete(id);
+            return RedirectToAction("Index", "Brands");
+        }
+        
+        catch (NotFoundException ex) {
+            ExceptionViewModel vm = new()
+            {
+                Exception = ex,
+                Controller = "Brands",
+                Action = "Index"
+            };
+            return NotFoundError(vm);
+        }
     }
 
 

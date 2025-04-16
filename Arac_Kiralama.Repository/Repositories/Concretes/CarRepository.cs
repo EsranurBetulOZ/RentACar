@@ -1,7 +1,7 @@
 ﻿using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Repository.Contexts;
 using Arac_Kiralama.Repository.Repositories.Abstracts;
-
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,12 +40,25 @@ public sealed class CarRepository(BaseDbContext context) : ICarRepository
 
     public List<Car> GetAll()
     {
-        return context.Cars.ToList();
+        // İlişkili varlıkları Include edin
+        return context.Cars
+            .Include(c => c.Brand)
+            .Include(c => c.Color)
+            .Include(c => c.Transmission)
+            .Include(c => c.Fuel)
+            .ToList();
+    
     }
 
     public Car GetById(Guid id)
     {
-        return context.Cars.Find(id);
+        // İlişkili varlıkları Include edin
+        return context.Cars
+            .Include(c => c.Brand)
+            .Include(c => c.Color)
+            .Include(c => c.Transmission)
+            .Include(c => c.Fuel)
+            .FirstOrDefault(c => c.Id == id);
     }
 
     public Car Update(Car car)

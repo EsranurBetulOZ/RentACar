@@ -4,6 +4,7 @@ using Arac_Kiralama.Repository.Repositories.Abstracts;
 using Arac_Kiralama.Repository.Repositories.Concretes;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Concretes;
+using Arac_Kiralama.Service.Helpers.Cloudinary;
 using Arac_Kiralama.Service.Mappers.Brands;
 using Arac_Kiralama.Service.Mappers.Cars;
 using Arac_Kiralama.Service.Mappers.Colors;
@@ -38,7 +39,10 @@ namespace Arac_Kiralama
             builder.Services.AddScoped<IFuelMapper, FuelAutoMapperConverter>();
             builder.Services.AddScoped<ICarMapper, CarAutoMapperConverter>();
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
-           
+            builder.Services.AddScoped<IFileService, CloudinaryFileService>();
+
+            builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -58,7 +62,7 @@ namespace Arac_Kiralama
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Brands}/{action=Index}/{id?}");
+                pattern: "{controller=Cars}/{action=Index}/{id?}");
 
             app.Run();
         }

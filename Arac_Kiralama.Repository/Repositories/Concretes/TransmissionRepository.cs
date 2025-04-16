@@ -25,6 +25,11 @@ namespace Arac_Kiralama.Repository.Repositories.Concretes
             context.SaveChanges();
             return transmission;
         }
+        
+        public bool ExistByTransmissionName(string name)
+        {
+            return context.Transmissions.Any(x => x.Name == name);
+        }
 
         public List<Transmission> GetAll()
         {

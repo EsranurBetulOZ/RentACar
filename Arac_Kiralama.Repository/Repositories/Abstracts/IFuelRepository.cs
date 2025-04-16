@@ -9,4 +9,5 @@ namespace Arac_Kiralama.Repository.Repositories.Abstracts;
 
 public interface IFuelRepository:IRepository<Fuel,int>
 {
+    bool ExistByFuelName(string name);
 }

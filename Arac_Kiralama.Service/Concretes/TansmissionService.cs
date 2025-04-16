@@ -2,7 +2,9 @@
 using Arac_Kiralama.Models.Dtos.Transmissions;
 using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Repository.Repositories.Abstracts;
+using Arac_Kiralama.Repository.Repositories.Concretes;
 using Arac_Kiralama.Service.Abstracts;
+using Arac_Kiralama.Service.Exceptions.Types;
 using Arac_Kiralama.Service.Mappers.Brands;
 using Arac_Kiralama.Service.Mappers.Transmissions;
 using System;
@@ -22,6 +24,11 @@ namespace Arac_Kiralama.Service.Concretes
 
         public void Add(TransmissionAddRequestDto dto)
         {
+            bool isPresent = _transmissionRepository.ExistByTransmissionName(dto.Name);
+            if (isPresent)
+            {
+                throw new BusinessException("Vites tipi mevcut. Tekrar eklenemez");
+            }
             Transmission transmission = _transmissionMapper.ConvertToEntity(dto);
             _transmissionRepository.Add(transmission);
         }
@@ -29,7 +36,10 @@ namespace Arac_Kiralama.Service.Concretes
         public void Delete(int id)
         {
             Transmission? transmission = _transmissionRepository.GetById(id);
-            //toDo: Eğer ilgili brand bulunamazsa exeption Handling mekanizması 
+            if (transmission is null)
+            {
+                throw new NotFoundException("İlgili vites tipi bulunamadı.");
+            }
             _transmissionRepository.Delete(transmission!);
         }
 

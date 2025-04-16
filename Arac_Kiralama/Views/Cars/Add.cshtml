@@ -1,7 +1,10 @@
 ﻿@using Arac_Kiralama.Models.Dtos.Cars
+@using Arac_Kiralama.Models.Dtos.Brands
 @model CarAddRequestDto
 
-
+@{
+    ViewData["Title"] = "Araç Ekleme";
+}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-dark fw-bold">Yeni Araç Ekle</h2>
@@ -9,7 +12,7 @@
 
     <div class="card shadow-sm border-0">
         <div class="card-body p-4">
-            <form asp-controller="Cars" asp-action="Add" method="post">
+            <form asp-controller="Cars" asp-action="Add" method="post" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-md-6 mb-4">
                         <label asp-for="Name" class="form-label fw-semibold">Araç Adı</label>
@@ -26,30 +29,62 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-4">
-                        <label asp-for="DailyPrice" class="form-label fw-semibold">Günlük Fiyat (₺)</label>
-                        <input asp-for="DailyPrice" type="number" step="0.01" class="form-control form-control-lg border-0 bg-light" placeholder="Günlük kiralama fiyatını giriniz" />
-                        <span asp-validation-for="DailyPrice" class="text-danger mt-1 d-block"></span>
-                    </div>
-                  
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label fw-semibold">Araç Görseli</label>
-                        <div class="bg-light p-3 rounded">
-                            <img src="@(!string.IsNullOrEmpty(Model?.ImageUrl) ? Model.ImageUrl : "/images/default-car.jpg")" alt="Araç Görseli" />
+                        <label class="form-label fw-semibold">Marka Adı</label>
+                        <select id="brandNameSelect" class="form-select form-select-lg border-0 bg-light">
+                            <option value="">Marka adı seçiniz</option>
+                            @{
+                                // ViewBag.Brands'i BrandResponseDto listesi olarak ele al
+                                if (ViewBag.Brands != null)
+                                {
+                                    // Benzersiz marka adlarını al
+                                    var uniqueBrandNames = new HashSet<string>();
+                                    foreach (BrandResponseDto brand in ViewBag.Brands)
+                                    {
+                                        uniqueBrandNames.Add(brand.Name);
+                                    }
 
-                            <p class="mb-0 mt-2 text-muted small">Tüm araçlar için varsayılan logo kullanılacaktır.</p>
-                        </div>
+                                    // Benzersiz marka adlarını listele
+                                    foreach (var brandName in uniqueBrandNames)
+                                    {
+                                        <option value="@brandName">@brandName</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="BrandId" class="form-label fw-semibold">Model Yılı</label>
+                        <select asp-for="BrandId" class="form-select form-select-lg border-0 bg-light" id="modelYearSelect" disabled>
+                            <option value="">Önce marka adı seçiniz</option>
+                        </select>
+                        <span asp-validation-for="BrandId" class="text-danger mt-1 d-block"></span>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-4">
-                        <label asp-for="BrandId" class="form-label fw-semibold">Marka</label>
-                        <select asp-for="BrandId" asp-items="@ViewBag.Brands" class="form-select form-select-lg border-0 bg-light">
-                            <option value="">Marka seçiniz</option>
-                        </select>
-                        <span asp-validation-for="BrandId" class="text-danger mt-1 d-block"></span>
+                        <label asp-for="DailyPrice" class="form-label fw-semibold">Günlük Fiyat (₺)</label>
+                        <input asp-for="DailyPrice" type="number" step="0.01" class="form-control form-control-lg border-0 bg-light" placeholder="Günlük kiralama fiyatını giriniz" />
+                        <span asp-validation-for="DailyPrice" class="text-danger mt-1 d-block"></span>
                     </div>
 
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="File" class="form-label fw-semibold">Araç Görseli</label>
+                        <input asp-for="File" type="file" class="form-control form-control-lg border-0 bg-light" accept="image/*" />
+                        <span asp-validation-for="File" class="text-danger mt-1 d-block"></span>
+
+                        @if (!string.IsNullOrEmpty(Model?.ImageUrl))
+                        {
+                            <div class="mt-2">
+                                <img src="@Model.ImageUrl" alt="Araç Görseli" class="img-thumbnail" style="max-height: 150px;" />
+                            </div>
+                        }
+                        <p class="mb-0 mt-2 text-muted small">Resim Cloudinary'ye yüklenecektir.</p>
+                    </div>
+                </div>
+
+                <div class="row">
                     <div class="col-md-6 mb-4">
                         <label asp-for="ColorId" class="form-label fw-semibold">Renk</label>
                         <select asp-for="ColorId" asp-items="@ViewBag.Colors" class="form-select form-select-lg border-0 bg-light">
@@ -57,9 +92,7 @@
                         </select>
                         <span asp-validation-for="ColorId" class="text-danger mt-1 d-block"></span>
                     </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6 mb-4">
                         <label asp-for="TransmissionId" class="form-label fw-semibold">Vites Tipi</label>
                         <select asp-for="TransmissionId" asp-items="@ViewBag.Transmissions" class="form-select form-select-lg border-0 bg-light">
@@ -67,7 +100,9 @@
                         </select>
                         <span asp-validation-for="TransmissionId" class="text-danger mt-1 d-block"></span>
                     </div>
+                </div>
 
+                <div class="row">
                     <div class="col-md-6 mb-4">
                         <label asp-for="FuelId" class="form-label fw-semibold">Yakıt Tipi</label>
                         <select asp-for="FuelId" asp-items="@ViewBag.Fuels" class="form-select form-select-lg border-0 bg-light">
@@ -94,4 +129,46 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        $(document).ready(function () {
+            // Marka adı seçildiğinde model yıllarını getir
+            $("#brandNameSelect").change(function () {
+                var brandName = $(this).val();
+                var modelYearSelect = $("#modelYearSelect");
+
+                // Model yılı dropdown'ını temizle
+                modelYearSelect.empty();
+
+                if (brandName === "") {
+                    // Marka adı seçilmemişse model yılı dropdown'ını devre dışı bırak
+                    modelYearSelect.prop("disabled", true);
+                    modelYearSelect.append('<option value="">Önce marka adı seçiniz</option>');
+                    return;
+                }
+
+                // AJAX ile seçilen marka adına ait model yıllarını getir
+                $.ajax({
+                    url: '@Url.Action("GetBrandsByName", "Cars")',
+                    type: 'GET',
+                    data: { brandName: brandName },
+                    success: function (brands) {
+                        // Model yılı dropdown'ını etkinleştir
+                        modelYearSelect.prop("disabled", false);
+
+                        // Varsayılan seçenek ekle
+                        modelYearSelect.append('<option value="">Model yılı seçiniz</option>');
+
+                        // Gelen model yıllarını dropdown'a ekle
+                        $.each(brands, function (i, brand) {
+                            modelYearSelect.append($('<option></option>').val(brand.id).text(brand.modelYear));
+                        });
+                    },
+                    error: function () {
+                        alert("Model yılları yüklenirken bir hata oluştu.");
+                    }
+                });
+            });
+        });
+    </script>
 }

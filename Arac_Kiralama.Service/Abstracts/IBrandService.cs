@@ -15,4 +15,5 @@ public interface IBrandService
     void Update(BrandUpdateRequestDto brand);
     BrandResponseDto GetById(int id);
     List<BrandResponseDto> GetAll();
+    List<Brand> GetBrandsByName(string brandName);
 }

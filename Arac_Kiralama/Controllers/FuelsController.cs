@@ -1,12 +1,14 @@
-﻿using Arac_Kiralama.Models.Dtos.Brands;
+﻿using Arac_Kiralama.Models;
+using Arac_Kiralama.Models.Dtos.Brands;
 using Arac_Kiralama.Models.Dtos.Fuels;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Concretes;
+using Arac_Kiralama.Service.Exceptions.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Arac_Kiralama.Controllers;
 
-public class FuelsController : Controller
+public class FuelsController : CustomBaseController
 {
     private readonly IFuelService _fuelService;
 
@@ -25,13 +27,27 @@ public class FuelsController : Controller
     {
         return View();
     }
+    [HttpPost]
     public IActionResult Add(FuelAddRequestDto fuel)
     {
-        _fuelService.Add(fuel);
-        return RedirectToAction("Index", "Fuels");
+        try
+        {
+            _fuelService.Add(fuel);
+            return RedirectToAction("Index", "Fuels");
+        }
+        catch (BusinessException ex)
+        {
+            ExceptionViewModel viewModel = new()
+            {
+                Exception = ex,
+                Controller = "Fuels",
+                Action = "Index"
+            };
 
+            return BusinessError(viewModel);
+        }
     }
-    [HttpGet]
+        [HttpGet]
     public IActionResult Update(int id)
     {
         var fuel = _fuelService.GetById(id);
@@ -47,7 +63,21 @@ public class FuelsController : Controller
     [HttpGet]
     public IActionResult Delete(int id)
     {
-        _fuelService.Delete(id);
-        return RedirectToAction("Index", "Fuels");
+        try
+        {
+            _fuelService.Delete(id);
+            return RedirectToAction("Index", "Fuels");
+        }
+        catch (NotFoundException ex)
+        {
+            ExceptionViewModel vm = new()
+            {
+                Exception = ex,
+                Controller = "Fuels",
+                Action = "Index"
+            };
+            return NotFoundError(vm);
+        }
+       
     }
 }

@@ -9,5 +9,6 @@ namespace Arac_Kiralama.Repository.Repositories.Abstracts
 {
     public interface IColorRepository: IRepository<Color, int>
     {
+        bool ExistByColorName(string name);
     }
 }

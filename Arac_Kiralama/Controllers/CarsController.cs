@@ -24,12 +24,12 @@ namespace Arac_Kiralama.Controllers
                 _fuelService = fuelService;
             }
 
-        public IActionResult Index(string vitesTipi, string yakitTipi, decimal? minFiyat, decimal? maxFiyat, string renk, string siralamaKriteri = "fiyatArtan")
+        public IActionResult Index(string vitesTipi = null, string yakitTipi = null, decimal? minFiyat = null, decimal? maxFiyat = null, string renk = null, string siralamaKriteri = "fiyatArtan")
         {
             // Tüm araçları getir
             var cars = _carService.GetAll();
 
-            // Filtreleme işlemleri
+            // Filtreleme işlemleri (parametreler null değilse)
             if (!string.IsNullOrEmpty(vitesTipi))
             {
                 cars = cars.Where(c => c.TransmissionName == vitesTipi).ToList();
@@ -92,14 +92,13 @@ namespace Arac_Kiralama.Controllers
         [HttpGet]
             public IActionResult Add()
             {
-                // Dropdown listeleri için verileri hazırla
-                ViewBag.Brands = new SelectList(_brandService.GetAll(), "Id", "Name");
-                ViewBag.Colors = new SelectList(_colorService.GetAll(), "Id", "Name");
-                ViewBag.Transmissions = new SelectList(_transmissionService.GetAll(), "Id", "Name");
-                ViewBag.Fuels = new SelectList(_fuelService.GetAll(), "Id", "Name");
+            ViewBag.Brands = _brandService.GetAll(); // SelectList kullanmadan doğrudan liste
+            ViewBag.Colors = new SelectList(_colorService.GetAll(), "Id", "Name");
+            ViewBag.Transmissions = new SelectList(_transmissionService.GetAll(), "Id", "Name");
+            ViewBag.Fuels = new SelectList(_fuelService.GetAll(), "Id", "Name");
 
-                return View();
-            }
+            return View();
+        }
 
             [HttpPost]
             public IActionResult Add(CarAddRequestDto car)
@@ -116,7 +115,21 @@ namespace Arac_Kiralama.Controllers
                 //ViewBag.Fuels = new SelectList(_fuelService.GetAll(), "Id", "Name");
 
             }
+        [HttpGet]
+        public IActionResult GetBrandsByName(string brandName)
+        {
+            // Seçilen marka adına göre tüm marka kayıtlarını getir (farklı model yılları)
+            var brands = _brandService.GetBrandsByName(brandName);
+            return Json(brands.Select(b => new { id = b.Id, modelYear = b.ModelYear }));
         }
+        private void LoadDropdowns()
+        {
+            ViewBag.Brands = new SelectList(_brandService.GetAll(), "Id", "Name");
+            ViewBag.Colors = new SelectList(_colorService.GetAll(), "Id", "Name");
+            ViewBag.Transmissions = new SelectList(_transmissionService.GetAll(), "Id", "Name");
+            ViewBag.Fuels = new SelectList(_fuelService.GetAll(), "Id", "Name");
+        }
+    }
     }
 
 
