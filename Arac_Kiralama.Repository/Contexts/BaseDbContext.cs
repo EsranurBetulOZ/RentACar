@@ -1,4 +1,6 @@
 ﻿using Arac_Kiralama.Models.Entity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,14 +9,24 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Arac_Kiralama.Repository.Contexts;
-public class BaseDbContext : DbContext
+public class BaseDbContext:IdentityDbContext<User,IdentityRole,string>
 {
+    public BaseDbContext(DbContextOptions<BaseDbContext> opt) : base(opt)
+    {
+
+    }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(@"server=(localdb)\MSSQLLocalDB ; Database=rent_a_car_db;Trusted_connection=true");
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<IdentityUserLogin<string>>(b =>
+        {
+            b.HasKey(l => new { l.LoginProvider, l.ProviderKey });
+        });
         modelBuilder.Entity<Car>()
             .Property(c => c.DailyPrice)
             .HasPrecision(12, 4);

@@ -6,7 +6,6 @@ using Arac_Kiralama.Service.Concretes;
 using Arac_Kiralama.Service.Exceptions.Types;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace Arac_Kiralama.Controllers;
 
 public class BrandsController : CustomBaseController
@@ -18,15 +17,10 @@ public class BrandsController : CustomBaseController
         _brandService = brandService;
     }
 
-    public IActionResult Index(string search)
+    public async Task<IActionResult> Index(string search)
     {
-        var responseDtos = _brandService.GetAll();
-        //List<BrandResponseDto> responseDtos = new();
-        //foreach (var item in brands)
-        //{
-        //    BrandResponseDto dto = new(Name: item.Name, ModelYear: item.ModelYear);
-        //    responseDtos.Add(dto);
-        //}
+        var responseDtos = await _brandService.GetAllAsync();
+
         if (!string.IsNullOrWhiteSpace(search))
         {
             responseDtos = responseDtos
@@ -36,18 +30,19 @@ public class BrandsController : CustomBaseController
 
         return View(responseDtos);
     }
+
     [HttpGet]
     public IActionResult Add()
     {
         return View();
     }
-    [HttpPost]
-    public IActionResult Add(BrandAddRequestDto brand)
-    {
 
+    [HttpPost]
+    public async Task<IActionResult> Add(BrandAddRequestDto brand)
+    {
         try
         {
-            _brandService.Add(brand);
+            await _brandService.AddAsync(brand);
 
             return RedirectToAction("Index", "Brands");
         }
@@ -61,39 +56,33 @@ public class BrandsController : CustomBaseController
             };
 
             return BusinessError(viewModel);
-
-            //return View(brand);
         }
     }
-    //public IActionResult BrandNameContains(string brandName)
-    //{
-    //    List<Brand> filteredBrand = Repository.Brands.FindAll(x=>x.Name.Contains(brandName,StringComparison.CurrentCultureIgnoreCase));
-    //    return View(filteredBrand);
-    //}
+
     [HttpGet]
-    public IActionResult Update(int id)
+    public async Task<IActionResult> Update(int id)
     {
-        var brand = _brandService.GetById(id);
+        var brand = await _brandService.GetByIdAsync(id);
         return View(brand);
     }
 
     [HttpPost]
-    public IActionResult Update(BrandUpdateRequestDto brand)
+    public async Task<IActionResult> Update(BrandUpdateRequestDto brand)
     {
-        _brandService.Update(brand);
+        await _brandService.UpdateAsync(brand);
         return RedirectToAction("Index", "Brands");
-
     }
+
     [HttpGet]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            _brandService.Delete(id);
+            await _brandService.DeleteAsync(id);
             return RedirectToAction("Index", "Brands");
         }
-        
-        catch (NotFoundException ex) {
+        catch (NotFoundException ex)
+        {
             ExceptionViewModel vm = new()
             {
                 Exception = ex,
@@ -104,6 +93,12 @@ public class BrandsController : CustomBaseController
         }
     }
 
-
-
+    
+    /*
+    public async Task<IActionResult> BrandNameContains(string brandName)
+    {
+        List<Brand> filteredBrand = await _brandService.GetBrandsByNameAsync(brandName);
+        return View(filteredBrand);
+    }
+    */
 }

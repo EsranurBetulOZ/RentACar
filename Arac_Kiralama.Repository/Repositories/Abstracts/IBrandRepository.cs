@@ -1,4 +1,5 @@
 ﻿using Arac_Kiralama.Models.Entity;
+using CorePackage.Repositories;
 
 
 namespace Arac_Kiralama.Repository.Repositories.Abstracts

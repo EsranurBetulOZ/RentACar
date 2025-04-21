@@ -1,67 +1,58 @@
-﻿
-using Arac_Kiralama.Models.Dtos.Transmissions;
+﻿using Arac_Kiralama.Models.Dtos.Transmissions;
 using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Repository.Repositories.Abstracts;
 using Arac_Kiralama.Repository.Repositories.Concretes;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Exceptions.Types;
-using Arac_Kiralama.Service.Mappers.Brands;
 using Arac_Kiralama.Service.Mappers.Transmissions;
-using System;
+using AutoMapper;
 
-namespace Arac_Kiralama.Service.Concretes
+namespace Arac_Kiralama.Service.Concretes;
+
+public class TansmissionService(IMapper mapper, ITransmissionRepository transmissionRepository) : ITransmissionService
 {
-    public class TansmissionService:ITransmissionService
+    public async Task AddAsync(TransmissionAddRequestDto transmissionAddRequestDto)
     {
-        private readonly ITransmissionRepository _transmissionRepository;
-        private readonly ITransmissionMapper _transmissionMapper;
-
-        public TansmissionService(ITransmissionRepository transmissionRepository, ITransmissionMapper transmissionMapper)
+        bool isPresent = transmissionRepository.ExistByTransmissionName(transmissionAddRequestDto.Name);
+        if (isPresent)
         {
-            _transmissionRepository = transmissionRepository;
-            _transmissionMapper = transmissionMapper;
+            throw new BusinessException("Vites Tipi aynı olmamalıdır");
+        }
+        Transmission transmission = mapper.Map<Transmission>(transmissionAddRequestDto);
+        await transmissionRepository.AddAsync(transmission);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var transmission = await transmissionRepository.GetByIdAsync(id);
+
+        if (transmission is null)
+        {
+            throw new NotFoundException("Vites Tipi bulunamadı.");
         }
 
-        public void Add(TransmissionAddRequestDto dto)
-        {
-            bool isPresent = _transmissionRepository.ExistByTransmissionName(dto.Name);
-            if (isPresent)
-            {
-                throw new BusinessException("Vites tipi mevcut. Tekrar eklenemez");
-            }
-            Transmission transmission = _transmissionMapper.ConvertToEntity(dto);
-            _transmissionRepository.Add(transmission);
-        }
+        await transmissionRepository.DeleteAsync(transmission!);
+    }
 
-        public void Delete(int id)
-        {
-            Transmission? transmission = _transmissionRepository.GetById(id);
-            if (transmission is null)
-            {
-                throw new NotFoundException("İlgili vites tipi bulunamadı.");
-            }
-            _transmissionRepository.Delete(transmission!);
-        }
+    public async Task<List<TransmissionResponseDto>> GetAllAsync()
+    {
+        var transmissions = await transmissionRepository.GetAllAsync(enableTracking: false);
+        var responses = mapper.Map<List<TransmissionResponseDto>>(transmissions);
+        return responses;
+    }
 
-        public List<TransmissionResponseDto> GetAll()
-        {
-            List<Transmission> transmissions = _transmissionRepository.GetAll();
-            List<TransmissionResponseDto> responses = _transmissionMapper.ConvertToResponseList(transmissions);
-            return responses;
-        }
+    public async Task<TransmissionResponseDto> GetByIdAsync(int id)
+    {
+        var transmission = await transmissionRepository.GetByIdAsync(id);
+        var response = mapper.Map<TransmissionResponseDto>(transmission);
+        return response;
+    }
 
-        public TransmissionResponseDto GetById(int id)
-        {
-            Transmission? transmission = _transmissionRepository.GetById(id);
-            //toDo: Eğer ilgili transmission bulunamazsa exeption Handling mekanizması 
-            TransmissionResponseDto dto = _transmissionMapper.ConvertToResponse(transmission!);
-            return dto;
-        }
-
-        public void Update(TransmissionUpdateRequestDto dto)
-        {
-            Transmission transmission = _transmissionMapper.ConvertToEntity(dto);
-            _transmissionRepository.Update(transmission);
-        }
+    public async Task UpdateAsync(TransmissionUpdateRequestDto transmissionUpdateRequestDto)
+    {
+        Transmission transmission = mapper.Map<Transmission>(transmissionUpdateRequestDto);
+        await transmissionRepository.UpdateAsync(transmission);
     }
 }
+
+

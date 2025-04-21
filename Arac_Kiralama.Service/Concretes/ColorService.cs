@@ -7,67 +7,65 @@ using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Exceptions.Types;
 using Arac_Kiralama.Service.Mappers.Brands;
 using Arac_Kiralama.Service.Mappers.Colors;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AutoMapper;
 
-namespace Arac_Kiralama.Service.Concretes
+namespace Arac_Kiralama.Service.Concretes;
+
+public sealed class ColorService(IMapper mapper, IColorRepository colorRepository) : IColorService
 {
-    public class ColorService : IColorService
+    public async Task AddAsync(ColorAddRequestDto colorAddRequestDto)
     {
-        private readonly IColorRepository _colorRepository;
-        private readonly IColorMapper _colorMapper;
-
-        public ColorService(IColorRepository colorRepository, IColorMapper colorMapper)
+        bool isPresent = colorRepository.ExistByColorName(colorAddRequestDto.Name);
+        if (isPresent)
         {
-            _colorRepository = colorRepository;
-            _colorMapper = colorMapper;
+            throw new BusinessException("Renk Adı aynı olmamalıdır");
+        }
+        Color color = mapper.Map<Color>(colorAddRequestDto);
+        await colorRepository.AddAsync(color);
+    }
+    
+
+    public async Task DeleteAsync(int id)
+    {
+        var color = await colorRepository.GetByIdAsync(id);
+
+        if (color is null)
+        {
+            throw new NotFoundException("İlgili Renk bulunamadı.");
         }
 
-        public void Add(ColorAddRequestDto dto)
-        {
-            bool isPresent = _colorRepository.ExistByColorName(dto.Name);
-            if (isPresent) {
-                throw new BusinessException("Renk Adı aynı olmamalıdır");
-            }
-            Color color = _colorMapper.ConvertToEntity(dto);
-            _colorRepository.Add(color);
-        }
+        await colorRepository.DeleteAsync(color!);
+    }
+    
 
-        public void Delete(int id)
-        {
-            
-            Color? color = _colorRepository.GetById(id);
-            if (color is null)
-            {
-                throw new NotFoundException("İlgili Renk bulunamadı.");
-            }
-           
-            _colorRepository.Delete(color!);
-        }
+    public async Task<List<ColorResponseDto>> GetAllAsync()
+    {
+        var colors = await colorRepository.GetAllAsync(enableTracking: false);
+        var responses = mapper.Map<List<ColorResponseDto>>(colors);
+        return responses;
+    }
 
-        public List<ColorResponseDto> GetAll()
-        {
-            List<Color> colors = _colorRepository.GetAll();
-            List<ColorResponseDto> responses = _colorMapper.ConvertToResponseList(colors);
-            return responses;
-        }
 
-        public ColorResponseDto GetById(int id)
-        {
-            Color? color = _colorRepository.GetById(id);
-            //toDo: Eğer ilgili color bulunamazsa exeption Handling mekanizması 
-            ColorResponseDto dto = _colorMapper.ConvertToResponse(color!);
-            return dto;
-        }
+    public async Task<ColorResponseDto> GetByIdAsync(int id)
+    {
+        var color = await colorRepository.GetByIdAsync(id);
+        var response = mapper.Map<ColorResponseDto>(color);
+        return response;
+    }
 
-        public void Update(ColorUpdateRequestDto dto)
-        {
-            Color color = _colorMapper.ConvertToEntity(dto);
-            _colorRepository.Update(color);
-        }
+    public async Task UpdateAsync(ColorUpdateRequestDto colorUpdateRequestDto)
+    {
+        Color color = mapper.Map<Color>(colorUpdateRequestDto);
+        await colorRepository.UpdateAsync(color);
     }
 }
+
+
+
+
+
+
+
+
+
+

@@ -1,4 +1,5 @@
 ﻿using Arac_Kiralama.Models.Entity;
+using CorePackage.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,14 +1,14 @@
 ﻿@using Arac_Kiralama.Models.Dtos.Cars
 @using Arac_Kiralama.Models.Dtos.Brands
-@model CarAddRequestDto
+@model CarUpdateRequestDto
 
 @{
-    ViewData["Title"] = "Araç Ekleme";
+    ViewData["Title"] = "Araç Güncelleme";
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-dark fw-bold">Yeni Araç Ekle</h2>
+        <h2 class="text-dark fw-bold">Araç Güncelleme</h2>
         <a asp-action="Index" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-left me-2"></i>Araç Listesine Dön
         </a>
@@ -16,20 +16,20 @@
 
     @if (!ViewData.ModelState.IsValid)
     {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Hata!</h5>
-                <p>Lütfen formdaki hataları düzeltin:</p>
-                <ul>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>Hata!</h5>
+            <p>Lütfen formdaki hataları düzeltin:</p>
+            <ul>
                 @foreach (var modelState in ViewData.ModelState.Values)
                 {
                     foreach (var error in modelState.Errors)
                     {
-                                    <li>@error.ErrorMessage</li>
+                        <li>@error.ErrorMessage</li>
                     }
                 }
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     }
 
     <div class="card shadow-sm border-0">
@@ -37,7 +37,10 @@
             <h5 class="card-title mb-0"><i class="bi bi-car-front me-2"></i>Araç Bilgileri</h5>
         </div>
         <div class="card-body p-4">
-            <form asp-controller="Cars" asp-action="Add" method="post" enctype="multipart/form-data" id="carAddForm" class="needs-validation" novalidate>
+            <form asp-controller="Cars" asp-action="Update" method="post" enctype="multipart/form-data" id="carUpdateForm" class="needs-validation" novalidate>
+                <!-- Gizli ID alanı -->
+                <input type="hidden" asp-for="Id" />
+
                 <div class="row">
                     <!-- Temel Bilgiler -->
                     <div class="col-lg-6">
@@ -101,7 +104,7 @@
                                             // Benzersiz marka adlarını listele
                                             foreach (var brandName in uniqueBrandNames)
                                             {
-                                                            <option value="@brandName">@brandName</option>
+                                                <option value="@brandName">@brandName</option>
                                             }
                                         }
                                     }
@@ -114,8 +117,8 @@
                             <label asp-for="BrandId" class="form-label fw-semibold">Model Yılı <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light"><i class="bi bi-calendar"></i></span>
-                                <select asp-for="BrandId" class="form-select border-start-0" id="modelYearSelect" disabled required>
-                                    <option value="">Önce marka adı seçiniz</option>
+                                <select asp-for="BrandId" class="form-select border-start-0" id="modelYearSelect" required>
+                                    <option value="">Model yılı seçiniz</option>
                                 </select>
                             </div>
                             <span asp-validation-for="BrandId" class="text-danger mt-1 d-block"></span>
@@ -128,13 +131,14 @@
                                 <input asp-for="File" type="file" class="form-control border-start-0" accept="image/*" />
                             </div>
                             <span asp-validation-for="File" class="text-danger mt-1 d-block"></span>
-                            <p class="mb-0 mt-2 text-muted small"><i class="bi bi-info-circle me-1"></i> Resim Cloudinary'ye yüklenecektir.</p>
+                            <p class="mb-0 mt-2 text-muted small"><i class="bi bi-info-circle me-1"></i> Yeni resim yüklerseniz mevcut resim değiştirilecektir.</p>
 
                             @if (!string.IsNullOrEmpty(Model?.ImageUrl))
                             {
-                                    <div class="mt-2">
-                                        <img src="@Model.ImageUrl" alt="Araç Görseli" class="img-thumbnail" style="max-height: 150px;" />
-                                    </div>
+                                <div class="mt-2" id="currentImage">
+                                    <p class="mb-1 text-muted small">Mevcut Görsel:</p>
+                                    <img src="@Model.ImageUrl" alt="Araç Görseli" class="img-thumbnail" style="max-height: 150px;" />
+                                </div>
                             }
                         </div>
                     </div>
@@ -184,7 +188,7 @@
 
                 <div class="d-flex gap-2 mt-4 justify-content-center">
                     <button type="submit" class="btn btn-primary px-4 py-2">
-                        <i class="bi bi-check-circle me-2"></i>Aracı Kaydet
+                        <i class="bi bi-check-circle me-2"></i>Değişiklikleri Kaydet
                     </button>
                     <a asp-action="Index" class="btn btn-light px-4 py-2">
                         <i class="bi bi-x-circle me-2"></i>İptal
@@ -200,112 +204,150 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-        <script>
-            $(document).ready(function () {
-                // Form doğrulama ayarları
-                (function () {
-                    'use strict'
+    <script>
+        $(document).ready(function () {
+            // Mevcut marka adını ve model yılını al
+            var currentBrandName = "";
+            var currentBrandId = "@Model.BrandId";
 
-                    // Fetch all forms we want to apply validation styles to
-                    var forms = document.querySelectorAll('.needs-validation')
-
-                    // Loop over them and prevent submission
-                    Array.prototype.slice.call(forms)
-                        .forEach(function (form) {
-                            form.addEventListener('submit', function (event) {
-                                // Model yılı seçilmediyse ve marka seçildiyse
-                                var brandName = $("#brandNameSelect").val();
-                                var modelYear = $("#modelYearSelect").val();
-
-                                if (brandName && !modelYear) {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    $("#modelYearSelect").addClass('is-invalid');
-                                    return;
-                                }
-
-                                if (!form.checkValidity()) {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                }
-
-                                form.classList.add('was-validated');
-                            }, false)
-                        })
-                })();
-
-                // Marka adı seçildiğinde model yıllarını getir
-                $("#brandNameSelect").change(function () {
-                    var brandName = $(this).val();
-                    var modelYearSelect = $("#modelYearSelect");
-
-                    // Model yılı dropdown'ını temizle
-                    modelYearSelect.empty();
-                    modelYearSelect.removeClass('is-invalid');
-
-                    if (brandName === "") {
-                        // Marka adı seçilmemişse model yılı dropdown'ını devre dışı bırak
-                        modelYearSelect.prop("disabled", true);
-                        modelYearSelect.append('<option value="">Önce marka adı seçiniz</option>');
-                        return;
-                    }
-
-                    // Loading göster
-                    modelYearSelect.append('<option value="">Yükleniyor...</option>');
-                    modelYearSelect.prop("disabled", true);
-
-                    // AJAX ile seçilen marka adına ait model yıllarını getir
-                    $.ajax({
-                        url: '@Url.Action("GetBrandsByName", "Cars")',
-                        type: 'GET',
-                        data: { brandName: brandName },
-                        success: function (brands) {
-                            // Model yılı dropdown'ını temizle
-                            modelYearSelect.empty();
-
-                            // Model yılı dropdown'ını etkinleştir
-                            modelYearSelect.prop("disabled", false);
-
-                            // Varsayılan seçenek ekle
-                            modelYearSelect.append('<option value="">Model yılı seçiniz</option>');
-
-                            if (brands && brands.length > 0) {
-                                // Gelen model yıllarını dropdown'a ekle
-                                $.each(brands, function (i, brand) {
-                                    modelYearSelect.append($('<option></option>').val(brand.id).text(brand.modelYear));
-                                });
-                            } else {
-                                modelYearSelect.append('<option value="">Bu markaya ait model yılı bulunamadı</option>');
-                                modelYearSelect.prop("disabled", true);
+            // Marka adını bul
+        @if (ViewBag.Brands != null)
+        {
+            <text>
+                @foreach (var item in ViewBag.Brands)
+                {
+                    <text>
+                            if ("@item.Value" === currentBrandId) {
+                                currentBrandName = "@item.Text";
                             }
-                        },
-                        error: function () {
-                            modelYearSelect.empty();
-                            modelYearSelect.append('<option value="">Hata oluştu</option>');
+                    </text>
+                }
+            </text>
+        }
+
+            // Marka adını seç
+            if (currentBrandName) {
+                $("#brandNameSelect").val(currentBrandName);
+                // Model yıllarını yükle
+                loadModelYears(currentBrandName, currentBrandId);
+            }
+
+            // Form doğrulama ayarları
+            (function () {
+                'use strict'
+
+                // Fetch all forms we want to apply validation styles to
+                var forms = document.querySelectorAll('.needs-validation')
+
+                // Loop over them and prevent submission
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            // Model yılı seçilmediyse ve marka seçildiyse
+                            var brandName = $("#brandNameSelect").val();
+                            var modelYear = $("#modelYearSelect").val();
+
+                            if (brandName && !modelYear) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                $("#modelYearSelect").addClass('is-invalid');
+                                return;
+                            }
+
+                            if (!form.checkValidity()) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+
+                            form.classList.add('was-validated');
+                        }, false)
+                    })
+            })();
+
+            // Marka adı seçildiğinde model yıllarını getir
+            $("#brandNameSelect").change(function () {
+                var brandName = $(this).val();
+                loadModelYears(brandName);
+            });
+
+            // Model yıllarını yükle
+            function loadModelYears(brandName, selectedBrandId = null) {
+                var modelYearSelect = $("#modelYearSelect");
+
+                // Model yılı dropdown'ını temizle
+                modelYearSelect.empty();
+                modelYearSelect.removeClass('is-invalid');
+
+                if (!brandName) {
+                    // Marka adı seçilmemişse model yılı dropdown'ını devre dışı bırak
+                    modelYearSelect.prop("disabled", true);
+                    modelYearSelect.append('<option value="">Önce marka adı seçiniz</option>');
+                    return;
+                }
+
+                // Loading göster
+                modelYearSelect.append('<option value="">Yükleniyor...</option>');
+                modelYearSelect.prop("disabled", true);
+
+                // AJAX ile seçilen marka adına ait model yıllarını getir
+                $.ajax({
+                    url: '@Url.Action("GetBrandsByName", "Cars")',
+                    type: 'GET',
+                    data: { brandName: brandName },
+                    success: function (brands) {
+                        // Model yılı dropdown'ını temizle
+                        modelYearSelect.empty();
+
+                        // Model yılı dropdown'ını etkinleştir
+                        modelYearSelect.prop("disabled", false);
+
+                        // Varsayılan seçenek ekle
+                        modelYearSelect.append('<option value="">Model yılı seçiniz</option>');
+
+                        if (brands && brands.length > 0) {
+                            // Gelen model yıllarını dropdown'a ekle
+                            $.each(brands, function (i, brand) {
+                                var option = $('<option></option>').val(brand.id).text(brand.modelYear);
+
+                                // Eğer seçili bir model yılı varsa onu seç
+                                if (selectedBrandId && brand.id == selectedBrandId) {
+                                    option.prop('selected', true);
+                                }
+
+                                modelYearSelect.append(option);
+                            });
+                        } else {
+                            modelYearSelect.append('<option value="">Bu markaya ait model yılı bulunamadı</option>');
                             modelYearSelect.prop("disabled", true);
-
-                            // Hata mesajı göster
-                            alert("Model yılları yüklenirken bir hata oluştu.");
                         }
-                    });
-                });
+                    },
+                    error: function () {
+                        modelYearSelect.empty();
+                        modelYearSelect.append('<option value="">Hata oluştu</option>');
+                        modelYearSelect.prop("disabled", true);
 
-                // Resim seçildiğinde önizleme göster
-                $("#File").change(function () {
-                    if (this.files && this.files[0]) {
-                        var reader = new FileReader();
-
-                        reader.onload = function (e) {
-                            // Eğer önceden bir önizleme varsa kaldır
-                            $("#imagePreview").remove();
-
-                            // Yeni önizleme ekle
-                            $('<div id="imagePreview" class="mt-2"><img src="' + e.target.result + '" class="img-thumbnail" style="max-height: 150px;" /></div>').insertAfter("#File");
-                        }
-
-                        reader.readAsDataURL(this.files[0]);
+                        // Hata mesajı göster
+                        alert("Model yılları yüklenirken bir hata oluştu.");
                     }
                 });
+            }
+
+            // Resim seçildiğinde önizleme göster
+            $("#File").change(function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        // Eğer önceden bir önizleme varsa kaldır
+                        $("#imagePreview").remove();
+
+                        // Yeni önizleme ekle
+                        $('<div id="imagePreview" class="mt-2"><p class="mb-1 text-muted small">Yeni Görsel:</p><img src="' + e.target.result + '" class="img-thumbnail" style="max-height: 150px;" /></div>').insertAfter("#File").next();
+                    }
+
+                    reader.readAsDataURL(this.files[0]);
+                }
             });
-        </script>
+        });
+    </script>
 }

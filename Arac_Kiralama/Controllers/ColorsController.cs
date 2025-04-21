@@ -17,9 +17,9 @@ public class ColorsController : CustomBaseController
         _colorService = colorService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var responseDtos = _colorService.GetAll();
+        var responseDtos = await _colorService.GetAllAsync();
         return View(responseDtos);
     }
     [HttpGet]
@@ -28,12 +28,12 @@ public class ColorsController : CustomBaseController
         return View();
     }
     [HttpPost]
-    public IActionResult Add(ColorAddRequestDto color)
+    public async Task<IActionResult> Add(ColorAddRequestDto color)
     {
 
         try
         {
-            _colorService.Add(color);
+           await _colorService.AddAsync(color);
 
             return RedirectToAction("Index", "Colors");
         }
@@ -52,24 +52,25 @@ public class ColorsController : CustomBaseController
 
 
     }
-    public IActionResult Update(int id)
+    [HttpGet]
+    public async Task< IActionResult> Update(int id)
     {
-        var color = _colorService.GetById(id);
+        var color =await _colorService.GetByIdAsync(id);
         return View(color);
     }
 
     [HttpPost]
-    public IActionResult Update(ColorUpdateRequestDto color)
+    public async Task< IActionResult> Update(ColorUpdateRequestDto color)
     {
-        _colorService.Update(color);
+        await _colorService.UpdateAsync(color);
         return RedirectToAction("Index", "Colors");
 
     }
     [HttpGet]
-    public IActionResult Delete(int id)
+    public async Task< IActionResult> Delete(int id)
     {
         try {
-			_colorService.Delete(id);
+			await _colorService.DeleteAsync(id);
 			return RedirectToAction("Index", "Colors");
 		}
         catch (NotFoundException ex) {

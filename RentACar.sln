@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arac_Kiralama", "Arac_Kiral
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arac_Kiralama.Models", "Arac_Kiralama.Models\Arac_Kiralama.Models.csproj", "{F269F566-3E04-4583-8F76-A5B9729D4E78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arac_Kiralama.Repository", "Arac_Kiralama.Repository\Arac_Kiralama.Repository.csproj", "{8669790E-239A-4FD3-846C-F5716948CE5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arac_Kiralama.Repository", "Arac_Kiralama.Repository\Arac_Kiralama.Repository.csproj", "{8669790E-239A-4FD3-846C-F5716948CE5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arac_Kiralama.Service", "Arac_Kiralama.Service\Arac_Kiralama.Service.csproj", "{6A2FB910-985D-4D8B-904C-D26366B1C159}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arac_Kiralama.Service", "Arac_Kiralama.Service\Arac_Kiralama.Service.csproj", "{6A2FB910-985D-4D8B-904C-D26366B1C159}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorePackage", "CorePackage\CorePackage.csproj", "{09E821E7-1656-4479-B0EF-6D3C9C35B880}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{6A2FB910-985D-4D8B-904C-D26366B1C159}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A2FB910-985D-4D8B-904C-D26366B1C159}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A2FB910-985D-4D8B-904C-D26366B1C159}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09E821E7-1656-4479-B0EF-6D3C9C35B880}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09E821E7-1656-4479-B0EF-6D3C9C35B880}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09E821E7-1656-4479-B0EF-6D3C9C35B880}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09E821E7-1656-4479-B0EF-6D3C9C35B880}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

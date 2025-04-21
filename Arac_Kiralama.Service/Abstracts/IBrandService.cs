@@ -10,10 +10,12 @@ namespace Arac_Kiralama.Service.Abstracts;
 
 public interface IBrandService
 {
-    void Add(BrandAddRequestDto brand);
-    void Delete(int id);
-    void Update(BrandUpdateRequestDto brand);
-    BrandResponseDto GetById(int id);
-    List<BrandResponseDto> GetAll();
+ 
+    Task AddAsync(BrandAddRequestDto brandAddRequestDto);
+    Task DeleteAsync(int id);
+    Task UpdateAsync(BrandUpdateRequestDto brandUpdateRequestDto);
+    Task<BrandResponseDto> GetByIdAsync(int id);
+    Task<List<BrandResponseDto>> GetAllAsync();
     List<Brand> GetBrandsByName(string brandName);
+    Task<List<Brand>> GetBrandsByNameAsync(string brandName);
 }

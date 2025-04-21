@@ -1,56 +1,54 @@
-﻿using Arac_Kiralama.Service.Abstracts;
-using CloudinaryDotNet.Actions;
+﻿using Arac_Kiralama.Service.Helpers.Cloudinary;
 using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Arac_Kiralama.Service.Helpers.Cloudinary;
+namespace YetenekStore.Service.Helpers.Cloudinary;
 
-public class CloudinaryFileService : IFileService
+public sealed class FileService : IFileService
 {
+
+    private Account _account;
     private readonly CloudinaryDotNet.Cloudinary _cloudinary;
+    private readonly CloudinarySettings _cloudinarySettings;
 
-    public CloudinaryFileService(IOptions<CloudinarySettings> options)
+    public FileService(IOptions<CloudinarySettings> cloudOptions)
     {
-        var account = new Account(
-            options.Value.CloudName,
-            options.Value.ApiKey,
-            options.Value.ApiSecret);
 
-        _cloudinary = new CloudinaryDotNet.Cloudinary(account);
-    }
+        _cloudinarySettings = cloudOptions.Value;
 
-
-
-    public string UploadImage(IFormFile file, string folderName)
-    {
-        if (file == null || file.Length == 0)
-            return string.Empty;
-
-        using (var stream = file.OpenReadStream())
+        _account = new Account()
         {
-            var uploadParams = new ImageUploadParams
+            Cloud = _cloudinarySettings.CloudName,
+            ApiKey = _cloudinarySettings.ApiKey,
+            ApiSecret = _cloudinarySettings.ApiSecret
+        };
+
+        _cloudinary = new(_account);
+        _cloudinary.Api.Client.Timeout = TimeSpan.FromMinutes(30);
+    }
+    public async Task<string> UploadImageAsync(IFormFile formFile, string folderName)
+    {
+        var uploadResult = new ImageUploadResult();
+
+        if (formFile.Length > 0)
+        {
+
+            using var stream = formFile.OpenReadStream();
+
+            var uploadParams = new ImageUploadParams()
             {
-                File = new FileDescription(file.FileName, stream),
-                Folder = folderName,
-                Transformation = new Transformation()
-                    .Width(800).Height(600).Crop("fill").Quality("auto:good")
+                File = new FileDescription(formFile.FileName, stream),
+                Folder = folderName
             };
 
-            var uploadResult = _cloudinary.Upload(uploadParams);
-
-            if (uploadResult.Error != null)
-            {
-                throw new Exception($"Cloudinary upload failed: {uploadResult.Error.Message}");
-            }
-
-            return uploadResult.SecureUrl.ToString();
+            uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            string imageUrl = _cloudinary.Api.UrlImgUp.BuildUrl(uploadResult.PublicId);
+            return imageUrl;
         }
+
+        return string.Empty;
+
     }
 }
-

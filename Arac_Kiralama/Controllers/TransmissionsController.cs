@@ -16,9 +16,9 @@ namespace Arac_Kiralama.Controllers
             _transmissionService = transmissionService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var responseDtos = _transmissionService.GetAll();
+            var responseDtos = await _transmissionService.GetAllAsync();
             return View(responseDtos);
         }
         [HttpGet]
@@ -27,11 +27,11 @@ namespace Arac_Kiralama.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Add(TransmissionAddRequestDto transmission)
+        public async Task<IActionResult> Add(TransmissionAddRequestDto transmission)
         {
             try
             {
-                _transmissionService.Add(transmission);
+                await _transmissionService.AddAsync(transmission);
 
                 return RedirectToAction("Index", "Transmissions");
             }
@@ -49,25 +49,25 @@ namespace Arac_Kiralama.Controllers
             
         }
         [HttpGet]
-        public IActionResult Update(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var transmission = _transmissionService.GetById(id);
+            var transmission =await _transmissionService.GetByIdAsync(id);
             return View(transmission);
         }
 
         [HttpPost]
-        public IActionResult Update(TransmissionUpdateRequestDto transmission)
+        public async Task<IActionResult> Update(TransmissionUpdateRequestDto transmission)
         {
-            _transmissionService.Update(transmission);
+            await _transmissionService.UpdateAsync(transmission);
             return RedirectToAction("Index", "Transmissions");
 
         }
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                _transmissionService.Delete(id);
+               await _transmissionService.DeleteAsync(id);
                 return RedirectToAction("Index", "Transmissions");
             }
            

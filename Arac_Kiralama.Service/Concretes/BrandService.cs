@@ -6,66 +6,63 @@ using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Service.Mappers.Brands;
 using Arac_Kiralama.Service.Exceptions.Types;
+using AutoMapper;
 
 
 namespace Arac_Kiralama.Service.Concretes;
 
-public class BrandService: IBrandService
+
+public sealed class BrandService(IMapper mapper, IBrandRepository brandRepository) : IBrandService
 {
-    private readonly IBrandRepository _brandRepository;
-    private readonly IBrandMapper _brandMapper;
-
-    public BrandService(IBrandRepository brandRepository, IBrandMapper brandMapper)
+    public async Task<BrandResponseDto> GetByIdAsync(int id)
     {
-        _brandRepository = brandRepository;
-        _brandMapper = brandMapper;
+        var brand = await brandRepository.GetByIdAsync(id);
+        var response = mapper.Map<BrandResponseDto>(brand);
+        return response;
     }
-
-    public void Add(BrandAddRequestDto dto)
+    public async Task<List<BrandResponseDto>> GetAllAsync()
     {
-        bool isPresent = _brandRepository.ExistByNameAndModelYear(dto.Name,dto.ModelYear);
+        var brands = await brandRepository.GetAllAsync(enableTracking: false);
+        var responses = mapper.Map<List<BrandResponseDto>>(brands);
+        return responses;
+    }
+    public async Task AddAsync(BrandAddRequestDto brandAddRequestDto)
+    {
+        bool isPresent = brandRepository.ExistByNameAndModelYear(brandAddRequestDto.Name, brandAddRequestDto.ModelYear);
         if (isPresent)
         {
             throw new BusinessException("Marka ve model mevcut. Tekrar eklenemez");
         }
-        Brand brand=_brandMapper.ConvertToEntity(dto);
-        _brandRepository.Add(brand);
+        Brand brand = mapper.Map<Brand>(brandAddRequestDto);
+        await brandRepository.AddAsync(brand);
     }
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-       Brand? brand=_brandRepository.GetById(id);
+        var brand = await brandRepository.GetByIdAsync(id);
+
         if (brand is null)
         {
             throw new NotFoundException("İlgili Marka/Model bulunamadı.");
         }
-        
-        _brandRepository.Delete(brand!);
+
+        await brandRepository.DeleteAsync(brand!);
     }
 
-    public List<BrandResponseDto> GetAll()
+    public async Task UpdateAsync(BrandUpdateRequestDto brandUpdateRequestDto)
     {
-       List<Brand> brands =_brandRepository.GetAll();
-       List<BrandResponseDto> responses = _brandMapper.ConvertToResponseList(brands);
-        return responses;
+        Brand brand = mapper.Map<Brand>(brandUpdateRequestDto);
+        await brandRepository.UpdateAsync(brand);
     }
 
     public List<Brand> GetBrandsByName(string brandName)
     {
-        return _brandRepository.GetBrandsByName(brandName);
+        return brandRepository.GetBrandsByName(brandName);
     }
 
-    public BrandResponseDto GetById(int id)
+    public async Task<List<Brand>> GetBrandsByNameAsync(string brandName)
     {
-        Brand? brand=_brandRepository.GetById(id);
-        //toDo: Eğer ilgili brand bulunamazsa exeption Handling mekanizması 
-        BrandResponseDto dto = _brandMapper.ConvertToResponse(brand!);
-        return dto;
-    }
-
-    public void Update(BrandUpdateRequestDto dto)
-    {
-        Brand brand = _brandMapper.ConvertToEntity(dto);
-        _brandRepository.Update(brand);
+        // Task.FromResult ile senkron metodu asenkron hale çeviriyoruz
+        return await Task.FromResult(GetBrandsByName(brandName));
     }
 }

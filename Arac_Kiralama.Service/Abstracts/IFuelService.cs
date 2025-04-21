@@ -10,9 +10,9 @@ namespace Arac_Kiralama.Service.Abstracts;
 
 public interface IFuelService
 {
-    void Add(FuelAddRequestDto fuel);
-    void Delete(int id);
-    void Update(FuelUpdateRequestDto fuel);
-    FuelResponseDto GetById(int id);
-    List<FuelResponseDto> GetAll();
+    Task AddAsync(FuelAddRequestDto fuelAddRequestDto);
+    Task DeleteAsync(int id);
+    Task UpdateAsync(FuelUpdateRequestDto fuelUpdateRequestDto);
+    Task<FuelResponseDto> GetByIdAsync(int id);
+    Task<List<FuelResponseDto>> GetAllAsync();
 }

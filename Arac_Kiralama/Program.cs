@@ -11,6 +11,8 @@ using Arac_Kiralama.Service.Mappers.Colors;
 using Arac_Kiralama.Service.Mappers.Fuels;
 using Arac_Kiralama.Service.Mappers.Profiles;
 using Arac_Kiralama.Service.Mappers.Transmissions;
+using Microsoft.AspNetCore.Identity;
+using YetenekStore.Service.Helpers.Cloudinary;
 
 namespace Arac_Kiralama
 {
@@ -23,6 +25,11 @@ namespace Arac_Kiralama
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<BaseDbContext>();
+            builder.Services.AddIdentity<User, IdentityRole>(opt =>
+            {
+                opt.User.RequireUniqueEmail = true;
+                opt.Password.RequireNonAlphanumeric = false;
+            }).AddEntityFrameworkStores<BaseDbContext>();
             builder.Services.AddScoped<IBrandService,BrandService>();
             builder.Services.AddScoped<IBrandRepository,BrandRepository>();
             builder.Services.AddScoped<IColorService, ColorService>();
@@ -39,7 +46,7 @@ namespace Arac_Kiralama
             builder.Services.AddScoped<IFuelMapper, FuelAutoMapperConverter>();
             builder.Services.AddScoped<ICarMapper, CarAutoMapperConverter>();
             builder.Services.AddAutoMapper(typeof(MappingProfiles));
-            builder.Services.AddScoped<IFileService, CloudinaryFileService>();
+            builder.Services.AddScoped<IFileService, FileService>();
 
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 

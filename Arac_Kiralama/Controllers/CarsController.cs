@@ -1,136 +1,222 @@
-﻿using Arac_Kiralama.Models.Dtos.Cars;
+﻿using Arac_Kiralama.Models;
+using Arac_Kiralama.Models.Dtos.Cars;
 using Arac_Kiralama.Service.Abstracts;
-using Arac_Kiralama.Service.Concretes;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+namespace Arac_Kiralama.Controllers;
 
+public class CarsController : Controller
+{
+    private readonly ICarService _carService;
+    private readonly IBrandService _brandService;
+    private readonly IColorService _colorService;
+    private readonly ITransmissionService _transmissionService;
+    private readonly IFuelService _fuelService;
+    private readonly IMapper _mapper; // IMapper ekleyin
 
-namespace Arac_Kiralama.Controllers
+    public CarsController(
+        ICarService carService,
+        IBrandService brandService,
+        IColorService colorService,
+        ITransmissionService transmissionService,
+        IFuelService fuelService,
+        IMapper mapper) // Constructor'a ekleyin
     {
-        public class CarsController : Controller
-        {
-            private readonly ICarService _carService;
-            private readonly IBrandService _brandService;
-            private readonly IColorService _colorService;
-            private readonly ITransmissionService _transmissionService;
-            private readonly IFuelService _fuelService;
-
-            public CarsController(ICarService carService, IBrandService brandService, IColorService colorService, ITransmissionService transmissionService, IFuelService fuelService)
-            {
-                _carService = carService;
-                _brandService = brandService;
-                _colorService = colorService;
-                _transmissionService = transmissionService;
-                _fuelService = fuelService;
-            }
-
-        public IActionResult Index(string vitesTipi = null, string yakitTipi = null, decimal? minFiyat = null, decimal? maxFiyat = null, string renk = null, string siralamaKriteri = "fiyatArtan")
-        {
-            // Tüm araçları getir
-            var cars = _carService.GetAll();
-
-            // Filtreleme işlemleri (parametreler null değilse)
-            if (!string.IsNullOrEmpty(vitesTipi))
-            {
-                cars = cars.Where(c => c.TransmissionName == vitesTipi).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(yakitTipi))
-            {
-                cars = cars.Where(c => c.FuelName == yakitTipi).ToList();
-            }
-
-            if (minFiyat.HasValue)
-            {
-                cars = cars.Where(c => c.DailyPrice >= minFiyat.Value).ToList();
-            }
-
-            if (maxFiyat.HasValue)
-            {
-                cars = cars.Where(c => c.DailyPrice <= maxFiyat.Value).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(renk))
-            {
-                cars = cars.Where(c => c.ColorName == renk).ToList();
-            }
-
-            // Sıralama işlemleri
-            switch (siralamaKriteri)
-            {
-                case "fiyatArtan":
-                    cars = cars.OrderBy(c => c.DailyPrice).ToList();
-                    break;
-                case "fiyatAzalan":
-                    cars = cars.OrderByDescending(c => c.DailyPrice).ToList();
-                    break;
-                    // Model yılı için bir alan eklenirse burada sıralama yapılabilir
-                    // case "modelYeni":
-                    //     cars = cars.OrderByDescending(c => c.ModelYear).ToList();
-                    //     break;
-                    // case "modelEski":
-                    //     cars = cars.OrderBy(c => c.ModelYear).ToList();
-                    //     break;
-            }
-
-            // Filtreleme için dropdown listelerini hazırla
-            ViewBag.Transmissions = _transmissionService.GetAll().Select(t => t.Name).Distinct().ToList();
-            ViewBag.Fuels = _fuelService.GetAll().Select(f => f.Name).Distinct().ToList();
-            ViewBag.Colors = _colorService.GetAll().Select(c => c.Name).Distinct().ToList();
-
-            // Filtreleme parametrelerini ViewBag'e ekle (form değerlerini korumak için)
-            ViewBag.SelectedVitesTipi = vitesTipi;
-            ViewBag.SelectedYakitTipi = yakitTipi;
-            ViewBag.SelectedMinFiyat = minFiyat;
-            ViewBag.SelectedMaxFiyat = maxFiyat;
-            ViewBag.SelectedRenk = renk;
-            ViewBag.SelectedSiralamaKriteri = siralamaKriteri;
-
-            return View(cars);
-        }
-
-        [HttpGet]
-            public IActionResult Add()
-            {
-            ViewBag.Brands = _brandService.GetAll(); // SelectList kullanmadan doğrudan liste
-            ViewBag.Colors = new SelectList(_colorService.GetAll(), "Id", "Name");
-            ViewBag.Transmissions = new SelectList(_transmissionService.GetAll(), "Id", "Name");
-            ViewBag.Fuels = new SelectList(_fuelService.GetAll(), "Id", "Name");
-
-            return View();
-        }
-
-            [HttpPost]
-            public IActionResult Add(CarAddRequestDto car)
-            {
-
-                    _carService.Add(car);
-                    return RedirectToAction("Index", "Cars");
-                
-
-                // Hata durumunda dropdown listelerini tekrar doldur
-                //ViewBag.Brands = new SelectList(_brandService.GetAll(), "Id", "Name");
-                //ViewBag.Colors = new SelectList(_colorService.GetAll(), "Id", "Name");
-                //ViewBag.Transmissions = new SelectList(_transmissionService.GetAll(), "Id", "Name");
-                //ViewBag.Fuels = new SelectList(_fuelService.GetAll(), "Id", "Name");
-
-            }
-        [HttpGet]
-        public IActionResult GetBrandsByName(string brandName)
-        {
-            // Seçilen marka adına göre tüm marka kayıtlarını getir (farklı model yılları)
-            var brands = _brandService.GetBrandsByName(brandName);
-            return Json(brands.Select(b => new { id = b.Id, modelYear = b.ModelYear }));
-        }
-        private void LoadDropdowns()
-        {
-            ViewBag.Brands = new SelectList(_brandService.GetAll(), "Id", "Name");
-            ViewBag.Colors = new SelectList(_colorService.GetAll(), "Id", "Name");
-            ViewBag.Transmissions = new SelectList(_transmissionService.GetAll(), "Id", "Name");
-            ViewBag.Fuels = new SelectList(_fuelService.GetAll(), "Id", "Name");
-        }
-    }
+        _carService = carService;
+        _brandService = brandService;
+        _colorService = colorService;
+        _transmissionService = transmissionService;
+        _fuelService = fuelService;
+        _mapper = mapper;
     }
 
+    public async Task<IActionResult> Index(
+        string vitesTipi = null,
+        string yakitTipi = null,
+        string renk = null,
+        string marka = null,
+        decimal? minFiyat = null,
+        decimal? maxFiyat = null,
+        string siralamaKriteri = "fiyatArtan",
+        int sayfa = 1)
+    {
+        // Filtreleme ve sayfalama ile araçları getir
+        var (cars, totalCount) = await _carService.GetFilteredCarsAsync(
+            vitesTipi, yakitTipi, renk, marka, minFiyat, maxFiyat, siralamaKriteri, sayfa, 9);
+
+        // Dropdown listeleri için verileri getir
+        var transmissions = await _carService.GetAllTransmissionsAsync();
+        var fuels = await _carService.GetAllFuelsAsync();
+        var colors = await _carService.GetAllColorsAsync();
+        var brands = await _carService.GetAllBrandsAsync();
+
+        // ViewModel oluştur
+        var model = new CarFilterViewModel
+        {
+            Cars = cars,
+            TransmissionSelectList = new SelectList(transmissions),
+            FuelSelectList = new SelectList(fuels),
+            ColorSelectList = new SelectList(colors),
+            BrandSelectList = new SelectList(brands),
+
+            SelectedTransmission = vitesTipi,
+            SelectedFuel = yakitTipi,
+            SelectedColor = renk,
+            SelectedBrand = marka,
+            SelectedMinPrice = minFiyat,
+            SelectedMaxPrice = maxFiyat,
+            SelectedSortCriteria = siralamaKriteri,
+
+            CurrentPage = sayfa,
+            TotalItems = totalCount
+        };
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Details(Guid id)
+    {
+        try
+        {
+            var car = await _carService.GetByIdAsync(id);
+            return View(car);
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction(nameof(Index));
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Add()
+    {
+        await LoadDropdowns();
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Add(CarAddRequestDto car)
+    {
+        if (!ModelState.IsValid)
+        {
+            await LoadDropdowns();
+            return View(car);
+        }
+
+        try
+        {
+            await _carService.AddAsync(car);
+            TempData["SuccessMessage"] = "Araç başarıyla eklendi.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            await LoadDropdowns();
+            return View(car);
+        }
+    }
+
+    [HttpGet]
+  
+    public async Task<IActionResult> Update(Guid id)
+    {
+        try
+        {
+            var car = await _carService.GetByIdAsync(id);
+
+            CarUpdateRequestDto updateDto = new CarUpdateRequestDto
+            {
+                Id = car.Id,
+                Name = car.Name,
+                BrandId = car.BrandId,
+                ColorId = car.ColorId,
+                TransmissionId = car.TransmissionId,
+                FuelId = car.FuelId,
+                DailyPrice = car.DailyPrice,
+                Kilometer = car.Kilometer
+            };
+
+            await LoadDropdowns();
+            return View(updateDto);
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+            return RedirectToAction(nameof(Index));
+        }
+    }
 
 
+    [HttpPost]
+    public async Task<IActionResult> Update(CarUpdateRequestDto car)
+    {
+        if (!ModelState.IsValid)
+        {
+            await LoadDropdowns();
+            return View(car);
+        }
+
+        try
+        {
+            // Eğer dosya yüklendiyse, form verilerini doğru şekilde işle
+            if (Request.Form.Files.Count > 0)
+            {
+                car.File = Request.Form.Files[0];
+            }
+
+            await _carService.UpdateAsync(car);
+            TempData["SuccessMessage"] = "Araç başarıyla güncellendi.";
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            await LoadDropdowns();
+            return View(car);
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        try
+        {
+            await _carService.DeleteAsync(id);
+            TempData["SuccessMessage"] = "Araç başarıyla silindi.";
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
+    public IActionResult GetBrandsByName(string brandName)
+    {
+        if (string.IsNullOrEmpty(brandName))
+        {
+            return Json(new List<object>());
+        }
+
+        // Mevcut senkron metodu kullanın
+        var brands = _brandService.GetBrandsByName(brandName);
+        return Json(brands.Select(b => new { id = b.Id, modelYear = b.ModelYear }));
+    }
+
+    private async Task LoadDropdowns()
+    {
+        ViewBag.Brands = new SelectList(await _brandService.GetAllAsync(), "Id", "Name");
+        ViewBag.Colors = new SelectList(await _colorService.GetAllAsync(), "Id", "Name");
+        ViewBag.Transmissions = new SelectList(await _transmissionService.GetAllAsync(), "Id", "Name");
+        ViewBag.Fuels = new SelectList(await _fuelService.GetAllAsync(), "Id", "Name");
+    }
+}

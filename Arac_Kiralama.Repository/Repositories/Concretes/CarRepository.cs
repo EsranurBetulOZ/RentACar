@@ -1,6 +1,7 @@
 ﻿using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Repository.Contexts;
 using Arac_Kiralama.Repository.Repositories.Abstracts;
+using CorePackage.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,62 +11,53 @@ using System.Threading.Tasks;
 
 namespace Arac_Kiralama.Repository.Repositories.Concretes;
 
-public sealed class CarRepository(BaseDbContext context) : ICarRepository
+public sealed class CarRepository : EfRepositoryBase<Car, Guid, BaseDbContext>, ICarRepository
 {
-    public Car Add(Car car)
+    public CarRepository(BaseDbContext context) : base(context)
     {
-        // İlişkili varlıkların varlığını kontrol et
-        //var brandExists = context.Brands.Any(b => b.Id == car.BrandId);
-        //var colorExists = context.Colors.Any(c => c.Id == car.ColorId);
-        //var transmissionExists = context.Transmissions.Any(t => t.Id == car.TransmissionId);
-        //var fuelExists = context.Fuels.Any(f => f.Id == car.FuelId);
-
-        //if (!brandExists || !colorExists || !transmissionExists || !fuelExists)
-        //{
-        //    throw new InvalidOperationException("İlişkili varlıklardan biri veya birkaçı bulunamadı");
-        //}
-
-        car.CreatedDate = DateTime.UtcNow;
-        context.Cars.Add(car);
-        context.SaveChanges();
-        return car;
     }
 
-    public Car Delete(Car car)
+    public async Task<List<Car>> GetAllWithIncludesAsync(bool enableTracking = true, CancellationToken cancellationToken = default)
     {
-        context.Cars.Remove(car);
-        context.SaveChanges();
-        return car;
+        var query = Context.Cars
+        .Include(c => c.Brand)
+        .Include(c => c.Color)
+        .Include(c => c.Transmission)
+        .Include(c => c.Fuel)
+        .AsQueryable();
+
+        if (!enableTracking)
+            query = query.AsNoTracking();
+
+        return await query.ToListAsync(cancellationToken);
     }
 
-    public List<Car> GetAll()
+    public async Task<Car> GetByIdWithIncludesAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        // İlişkili varlıkları Include edin
-        return context.Cars
-            .Include(c => c.Brand)
-            .Include(c => c.Color)
-            .Include(c => c.Transmission)
-            .Include(c => c.Fuel)
-            .ToList();
-    
+        return await Context.Cars
+         .Include(c => c.Brand)
+         .Include(c => c.Color)
+         .Include(c => c.Transmission)
+         .Include(c => c.Fuel)
+         .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
-
-    public Car GetById(Guid id)
-    {
-        // İlişkili varlıkları Include edin
-        return context.Cars
-            .Include(c => c.Brand)
-            .Include(c => c.Color)
-            .Include(c => c.Transmission)
-            .Include(c => c.Fuel)
-            .FirstOrDefault(c => c.Id == id);
-    }
-
-    public Car Update(Car car)
-    {
-        car.UpdatedDate = DateTime.UtcNow;
-        context.Cars.Update(car);
-        context.SaveChanges();
-        return car;
-    }
+       public async Task<Car> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+{
+    return await Context.Cars
+        .Include(c => c.Brand)
+        .Include(c => c.Color)
+        .Include(c => c.Transmission)
+        .Include(c => c.Fuel)
+        .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 }
+
+}
+
+
+
+
+
+
+
+
+

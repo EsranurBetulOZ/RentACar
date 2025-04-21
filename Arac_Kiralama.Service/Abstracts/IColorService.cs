@@ -9,10 +9,10 @@ namespace Arac_Kiralama.Service.Abstracts
 {
     public interface IColorService
     {
-        void Add(ColorAddRequestDto color);
-        void Delete(int id);
-        void Update(ColorUpdateRequestDto color);
-        ColorResponseDto GetById(int id);
-        List<ColorResponseDto> GetAll();
+        Task AddAsync(ColorAddRequestDto colorAddRequestDto);
+        Task DeleteAsync(int id);
+        Task UpdateAsync(ColorUpdateRequestDto colorUpdateRequestDto);
+       Task<ColorResponseDto> GetByIdAsync(int id);
+        Task<List<ColorResponseDto>> GetAllAsync();
     }
 }

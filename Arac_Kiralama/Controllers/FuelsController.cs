@@ -17,9 +17,9 @@ public class FuelsController : CustomBaseController
         _fuelService = fuelService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var responseDtos = _fuelService.GetAll();
+        var responseDtos =await _fuelService.GetAllAsync();
         return View(responseDtos);
     }
     [HttpGet]
@@ -28,11 +28,11 @@ public class FuelsController : CustomBaseController
         return View();
     }
     [HttpPost]
-    public IActionResult Add(FuelAddRequestDto fuel)
+    public async Task<IActionResult> Add(FuelAddRequestDto fuel)
     {
         try
         {
-            _fuelService.Add(fuel);
+            await _fuelService.AddAsync(fuel);
             return RedirectToAction("Index", "Fuels");
         }
         catch (BusinessException ex)
@@ -48,24 +48,24 @@ public class FuelsController : CustomBaseController
         }
     }
         [HttpGet]
-    public IActionResult Update(int id)
+    public async Task<IActionResult> Update(int id)
     {
-        var fuel = _fuelService.GetById(id);
+        var fuel =await _fuelService.GetByIdAsync(id);
         return View(fuel);
     }
     [HttpPost]
-    public IActionResult Update(FuelUpdateRequestDto fuel)
+    public async Task<IActionResult> Update(FuelUpdateRequestDto fuel)
     {
-        _fuelService.Update(fuel);
+       await _fuelService.UpdateAsync(fuel);
         return RedirectToAction("Index", "Fuels");
 
     }
     [HttpGet]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
-            _fuelService.Delete(id);
+            await _fuelService.DeleteAsync(id);
             return RedirectToAction("Index", "Fuels");
         }
         catch (NotFoundException ex)

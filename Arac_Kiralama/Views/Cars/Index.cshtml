@@ -1,10 +1,7 @@
-﻿@using Arac_Kiralama.Models.Dtos.Cars
-@model List<CarResponseDto>
-
-
+﻿@model CarFilterViewModel
 
 @{
-    ViewData["Title"] = "Anasayfa";
+    ViewData["Title"] = "Araçlar";
 }
 
 <div class="container-fluid mt-4">
@@ -21,9 +18,9 @@
                             <label for="vitesTipi" class="form-label fw-bold">Vites Tipi</label>
                             <select class="form-select" id="vitesTipi" name="vitesTipi">
                                 <option value="">Tümü</option>
-                                @foreach (var vitesTipi in ViewBag.Transmissions)
+                                @foreach (var item in Model.TransmissionSelectList)
                                 {
-                                    <option value="@vitesTipi" selected="@(vitesTipi == ViewBag.SelectedVitesTipi)">@vitesTipi</option>
+                                    <option value="@item.Value" selected="@(item.Value == Model.SelectedTransmission)">@item.Text</option>
                                 }
                             </select>
                         </div>
@@ -32,9 +29,31 @@
                             <label for="yakitTipi" class="form-label fw-bold">Yakıt Tipi</label>
                             <select class="form-select" id="yakitTipi" name="yakitTipi">
                                 <option value="">Tümü</option>
-                                @foreach (var yakitTipi in ViewBag.Fuels)
+                                @foreach (var item in Model.FuelSelectList)
                                 {
-                                    <option value="@yakitTipi" selected="@(yakitTipi == ViewBag.SelectedYakitTipi)">@yakitTipi</option>
+                                    <option value="@item.Value" selected="@(item.Value == Model.SelectedFuel)">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="renk" class="form-label fw-bold">Renk</label>
+                            <select class="form-select" id="renk" name="renk">
+                                <option value="">Tümü</option>
+                                @foreach (var item in Model.ColorSelectList)
+                                {
+                                    <option value="@item.Value" selected="@(item.Value == Model.SelectedColor)">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="marka" class="form-label fw-bold">Marka</label>
+                            <select class="form-select" id="marka" name="marka">
+                                <option value="">Tümü</option>
+                                @foreach (var item in Model.BrandSelectList)
+                                {
+                                    <option value="@item.Value" selected="@(item.Value == Model.SelectedBrand)">@item.Text</option>
                                 }
                             </select>
                         </div>
@@ -42,23 +61,13 @@
                         <div class="mb-3">
                             <label class="form-label fw-bold">Günlük Fiyat Aralığı</label>
                             <div class="d-flex gap-2">
-                                <input type="number" class="form-control" id="minFiyat" name="minFiyat" placeholder="Min ₺" value="@ViewBag.SelectedMinFiyat">
-                                <input type="number" class="form-control" id="maxFiyat" name="maxFiyat" placeholder="Max ₺" value="@ViewBag.SelectedMaxFiyat">
+                                <input type="number" class="form-control" id="minFiyat" name="minFiyat" placeholder="Min ₺" value="@Model.SelectedMinPrice">
+                                <input type="number" class="form-control" id="maxFiyat" name="maxFiyat" placeholder="Max ₺" value="@Model.SelectedMaxPrice">
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="renk" class="form-label fw-bold">Renk</label>
-                            <select class="form-select" id="renk" name="renk">
-                                <option value="">Tümü</option>
-                                @foreach (var renk in ViewBag.Colors)
-                                {
-                                    <option value="@renk" selected="@(renk == ViewBag.SelectedRenk)">@renk</option>
-                                }
-                            </select>
-                        </div>
-
-                        <input type="hidden" id="siralamaKriteri" name="siralamaKriteri" value="@ViewBag.SelectedSiralamaKriteri" />
+                        <input type="hidden" id="siralamaKriteri" name="siralamaKriteri" value="@Model.SelectedSortCriteria" />
+                        <input type="hidden" id="sayfa" name="sayfa" value="1" />
 
                         <button type="submit" class="btn btn-primary w-100">Filtrele</button>
                         <a href="@Url.Action("Index", "Cars")" class="btn btn-outline-secondary w-100 mt-2">Filtreleri Temizle</a>
@@ -74,20 +83,34 @@
                 <div class="d-flex gap-2 align-items-center">
                     <label for="sirala" class="form-label mb-0">Sırala:</label>
                     <select class="form-select form-select-sm" id="sirala" style="width: auto;">
-                        <option value="fiyatArtan" selected="@(ViewBag.SelectedSiralamaKriteri == "fiyatArtan")">Fiyat (Artan)</option>
-                        <option value="fiyatAzalan" selected="@(ViewBag.SelectedSiralamaKriteri == "fiyatAzalan")">Fiyat (Azalan)</option>
-                        @* Model yılı için bir alan eklenirse bu seçenekler aktif edilebilir
-                        <option value="modelYeni" selected="@(ViewBag.SelectedSiralamaKriteri == "modelYeni")">Model (Yeni)</option>
-                        <option value="modelEski" selected="@(ViewBag.SelectedSiralamaKriteri == "modelEski")">Model (Eski)</option>
-                        *@
+                        @foreach (var option in Model.SortOptions)
+                        {
+                            <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+                        }
                     </select>
                 </div>
             </div>
 
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="aracListesi">
-                @if (Model != null && Model.Any())
+                @if (Model.Cars != null && Model.Cars.Any())
                 {
-                    foreach (var car in Model)
+                    foreach (var car in Model.Cars)
                     {
                         <div class="col">
                             <div class="card h-100 shadow-sm">
@@ -100,7 +123,7 @@
                                     <img src="https://via.placeholder.com/350x200?text=@car.Name" class="card-img-top" alt="@car.Name" style="height: 200px; object-fit: cover;">
                                 }
                                 <div class="card-body">
-                                    <h5 class="card-title">@car.BrandName-@car.Name</h5>
+                                    <h5 class="card-title">@car.BrandName - @car.Name</h5>
                                     <div class="card-text">
                                         <div class="row mb-2">
                                             <div class="col-6">
@@ -126,7 +149,12 @@
                                 </div>
                                 <div class="card-footer bg-white d-flex justify-content-between align-items-center">
                                     <span class="fw-bold text-primary fs-5">@car.DailyPrice.ToString("N0") ₺</span>
-                                    <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-primary">Detaylar</a>
+                                    <div>
+                                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-primary">Detaylar</a>
+                                        <a href="@Url.Action("Update", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-warning">Düzenle</a>
+                                        <a href="@Url.Action("Delete", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-danger" 
+                                           onclick="return confirm('Bu aracı silmek istediğinize emin misiniz?')">Sil</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -136,18 +164,60 @@
                 {
                     <div class="col-12">
                         <div class="alert alert-info">
-                            <i class="bi bi-info-circle me-2"></i> Henüz araç bulunmamaktadır.
+                            <i class="bi bi-info-circle me-2"></i> Araç bulunamadı.
                         </div>
                     </div>
                 }
             </div>
 
-            <!-- Sonuç Bulunamadı Mesajı -->
-            @if (Model != null && !Model.Any())
+            <!-- Sayfalama -->
+            @if (Model.TotalPages > 1)
             {
-                <div id="noResultMessage" class="alert alert-info mt-3">
-                    <i class="bi bi-info-circle me-2"></i> Arama kriterlerinize uygun araç bulunamadı.
-                </div>
+                <nav aria-label="Sayfalama" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", "Cars", new { 
+                                vitesTipi = Model.SelectedTransmission, 
+                                yakitTipi = Model.SelectedFuel, 
+                                renk = Model.SelectedColor,
+                                marka = Model.SelectedBrand,
+                                minFiyat = Model.SelectedMinPrice, 
+                                maxFiyat = Model.SelectedMaxPrice, 
+                                siralamaKriteri = Model.SelectedSortCriteria, 
+                                sayfa = Model.CurrentPage - 1 
+                            })">Önceki</a>
+                        </li>
+                        
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", "Cars", new { 
+                                    vitesTipi = Model.SelectedTransmission, 
+                                    yakitTipi = Model.SelectedFuel, 
+                                    renk = Model.SelectedColor,
+                                    marka = Model.SelectedBrand,
+                                    minFiyat = Model.SelectedMinPrice, 
+                                    maxFiyat = Model.SelectedMaxPrice, 
+                                    siralamaKriteri = Model.SelectedSortCriteria, 
+                                    sayfa = i 
+                                })">@i</a>
+                            </li>
+                        }
+                        
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="@Url.Action("Index", "Cars", new { 
+                                vitesTipi = Model.SelectedTransmission, 
+                                yakitTipi = Model.SelectedFuel, 
+                                renk = Model.SelectedColor,
+                                marka = Model.SelectedBrand,
+                                minFiyat = Model.SelectedMinPrice, 
+                                maxFiyat = Model.SelectedMaxPrice, 
+                                siralamaKriteri = Model.SelectedSortCriteria, 
+                                sayfa = Model.CurrentPage + 1 
+                            })">Sonraki</a>
+                        </li>
+                    </ul>
+                </nav>
             }
         </div>
     </div>
@@ -161,6 +231,16 @@
                 $("#siralamaKriteri").val($(this).val());
                 $("#filterForm").submit();
             });
+
+            // Filtreleme formunu göndermeden önce sayfa değerini 1'e ayarla
+            $("#filterForm").on("submit", function() {
+                $("#sayfa").val(1);
+            });
+
+            // 3 saniye sonra başarı ve hata mesajlarını otomatik kapat
+            setTimeout(function() {
+                $(".alert").alert('close');
+            }, 3000);
         });
     </script>
 }

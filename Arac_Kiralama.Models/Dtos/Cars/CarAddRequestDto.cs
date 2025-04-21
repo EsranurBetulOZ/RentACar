@@ -7,8 +7,15 @@ using System.Threading.Tasks;
 
 namespace Arac_Kiralama.Models.Dtos.Cars;
 
-public sealed record class CarAddRequestDto(string Name, int Kilometer, decimal DailyPrice, string ImageUrl, int BrandId, int ColorId, int TransmissionId, int FuelId, IFormFile? File)
+public sealed record class CarAddRequestDto
 {
-    // Parametre almayan constructor ekleyin
-    public CarAddRequestDto() : this("", 0, 0, "", 0, 0, 0, 0, null) { }
-};
+    public string Name { get; set; } = string.Empty;
+    public int Kilometer { get; set; }
+    public decimal DailyPrice { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
+    public int BrandId { get; set; }
+    public int ColorId { get; set; }
+    public int TransmissionId { get; set; }
+    public int FuelId { get; set; }
+    public IFormFile? File { get; set; }
+}
