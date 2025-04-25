@@ -1,4 +1,8 @@
 ﻿@model CarFilterViewModel
+@using Microsoft.AspNetCore.Identity
+@using Arac_Kiralama.Models.Entity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 
 @{
     ViewData["Title"] = "Araçlar";
@@ -107,12 +111,12 @@
                 </div>
             }
 
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="aracListesi">
+            <div class="row row-cols-1 row-cols-md-2 g-4" id="aracListesi">
                 @if (Model.Cars != null && Model.Cars.Any())
                 {
                     foreach (var car in Model.Cars)
                     {
-                        <div class="col">
+                        <div class="@(User.IsInRole("Admin") ? "col-md-6 col-lg-6" : "col-md-6 col-lg-4")">
                             <div class="card h-100 shadow-sm">
                                 @if (!string.IsNullOrEmpty(car.ImageUrl))
                                 {
@@ -147,15 +151,66 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card-footer bg-white d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold text-primary fs-5">@car.DailyPrice.ToString("N0") ₺</span>
-                                    <div>
-                                        <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-primary">Detaylar</a>
-                                        <a href="@Url.Action("Update", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-warning">Düzenle</a>
-                                        <a href="@Url.Action("Delete", "Cars", new { id = car.Id })" class="btn btn-sm btn-outline-danger" 
-                                           onclick="return confirm('Bu aracı silmek istediğinize emin misiniz?')">Sil</a>
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <!-- Admin için özel kart footer düzeni -->
+                                    <div class="card-footer bg-white">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="price-tag">
+                                                <span class="fw-bold text-primary fs-5">@car.DailyPrice.ToString("N0") ₺</span>
+                                                <span class="text-muted small">/ günlük</span>
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-outline-primary car-btn">
+                                                    <i class="bi bi-info-circle"></i> Detaylar
+                                                </a>
+                                                <a href="@Url.Action("Update", "Cars", new { id = car.Id })" class="btn btn-outline-warning car-btn">
+                                                    <i class="bi bi-pencil"></i> Düzenle
+                                                </a>
+                                                <a href="@Url.Action("Delete", "Cars", new { id = car.Id })" class="btn btn-outline-danger car-btn"
+                                                   onclick="return confirm('Bu aracı silmek istediğinize emin misiniz?')">
+                                                    <i class="bi bi-trash"></i> Sil
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                }
+                                else
+                                {
+                                    <!-- Normal kullanıcılar için kart footer düzeni -->
+                                    <div class="card-footer bg-white">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <div class="price-tag">
+                                                <span class="fw-bold text-primary fs-5">@car.DailyPrice.ToString("N0") ₺</span>
+                                                <span class="text-muted small">/ günlük</span>
+                                            </div>
+                                            <a href="@Url.Action("Details", "Cars", new { id = car.Id })" class="btn btn-outline-primary car-btn">
+                                                <i class="bi bi-info-circle"></i> Detaylar
+                                            </a>
+                                        </div>
+
+                                        @if (SignInManager.IsSignedIn(User))
+                                        {
+                                            <!-- Normal kullanıcılar için Kirala butonu -->
+                                            <div class="d-flex justify-content-end">
+                                                <a href="@Url.Action("New", "Reservation", new { carId = car.Id })" class="btn btn-success car-btn">
+                                                    <i class="bi bi-calendar-check"></i> Kirala
+                                                </a>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <!-- Giriş yapmamış kullanıcılar için Kirala butonu -->
+                                            <div class="d-flex justify-content-end">
+                                                <a href="@Url.Action("Login", "Account", new { returnUrl = Url.Action("New", "Reservation", new { carId = car.Id }) })"
+                                                   class="btn btn-primary car-btn">
+                                                    <i class="bi bi-person"></i> Kirala
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                }
                             </div>
                         </div>
                     }
@@ -169,6 +224,8 @@
                     </div>
                 }
             </div>
+                            
+               
 
             <!-- Sayfalama -->
             @if (Model.TotalPages > 1)
@@ -176,44 +233,44 @@
                 <nav aria-label="Sayfalama" class="mt-4">
                     <ul class="pagination justify-content-center">
                         <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                            <a class="page-link" href="@Url.Action("Index", "Cars", new { 
-                                vitesTipi = Model.SelectedTransmission, 
-                                yakitTipi = Model.SelectedFuel, 
+                            <a class="page-link" href="@Url.Action("Index", "Cars", new {
+                                vitesTipi = Model.SelectedTransmission,
+                                yakitTipi = Model.SelectedFuel,
                                 renk = Model.SelectedColor,
                                 marka = Model.SelectedBrand,
-                                minFiyat = Model.SelectedMinPrice, 
-                                maxFiyat = Model.SelectedMaxPrice, 
-                                siralamaKriteri = Model.SelectedSortCriteria, 
-                                sayfa = Model.CurrentPage - 1 
+                                minFiyat = Model.SelectedMinPrice,
+                                maxFiyat = Model.SelectedMaxPrice,
+                                siralamaKriteri = Model.SelectedSortCriteria,
+                                sayfa = Model.CurrentPage - 1
                             })">Önceki</a>
                         </li>
-                        
+
                         @for (int i = 1; i <= Model.TotalPages; i++)
                         {
                             <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                                <a class="page-link" href="@Url.Action("Index", "Cars", new { 
-                                    vitesTipi = Model.SelectedTransmission, 
-                                    yakitTipi = Model.SelectedFuel, 
+                                <a class="page-link" href="@Url.Action("Index", "Cars", new {
+                                    vitesTipi = Model.SelectedTransmission,
+                                    yakitTipi = Model.SelectedFuel,
                                     renk = Model.SelectedColor,
                                     marka = Model.SelectedBrand,
-                                    minFiyat = Model.SelectedMinPrice, 
-                                    maxFiyat = Model.SelectedMaxPrice, 
-                                    siralamaKriteri = Model.SelectedSortCriteria, 
-                                    sayfa = i 
+                                    minFiyat = Model.SelectedMinPrice,
+                                    maxFiyat = Model.SelectedMaxPrice,
+                                    siralamaKriteri = Model.SelectedSortCriteria,
+                                    sayfa = i
                                 })">@i</a>
                             </li>
                         }
-                        
+
                         <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                            <a class="page-link" href="@Url.Action("Index", "Cars", new { 
-                                vitesTipi = Model.SelectedTransmission, 
-                                yakitTipi = Model.SelectedFuel, 
+                            <a class="page-link" href="@Url.Action("Index", "Cars", new {
+                                vitesTipi = Model.SelectedTransmission,
+                                yakitTipi = Model.SelectedFuel,
                                 renk = Model.SelectedColor,
                                 marka = Model.SelectedBrand,
-                                minFiyat = Model.SelectedMinPrice, 
-                                maxFiyat = Model.SelectedMaxPrice, 
-                                siralamaKriteri = Model.SelectedSortCriteria, 
-                                sayfa = Model.CurrentPage + 1 
+                                minFiyat = Model.SelectedMinPrice,
+                                maxFiyat = Model.SelectedMaxPrice,
+                                siralamaKriteri = Model.SelectedSortCriteria,
+                                sayfa = Model.CurrentPage + 1
                             })">Sonraki</a>
                         </li>
                     </ul>
@@ -233,12 +290,12 @@
             });
 
             // Filtreleme formunu göndermeden önce sayfa değerini 1'e ayarla
-            $("#filterForm").on("submit", function() {
+            $("#filterForm").on("submit", function () {
                 $("#sayfa").val(1);
             });
 
             // 3 saniye sonra başarı ve hata mesajlarını otomatik kapat
-            setTimeout(function() {
+            setTimeout(function () {
                 $(".alert").alert('close');
             }, 3000);
         });

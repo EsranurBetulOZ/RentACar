@@ -4,8 +4,6 @@ using Arac_Kiralama.Repository.Repositories.Abstracts;
 using Arac_Kiralama.Repository.Repositories.Concretes;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Exceptions.Types;
-using Arac_Kiralama.Service.Helpers.Cloudinary;
-using Arac_Kiralama.Service.Mappers.Cars;
 using AutoMapper;
 using YetenekStore.Service.Helpers.Cloudinary;
 

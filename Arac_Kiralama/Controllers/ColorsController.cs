@@ -4,10 +4,11 @@ using Arac_Kiralama.Models.Dtos.Colors;
 using Arac_Kiralama.Service.Abstracts;
 using Arac_Kiralama.Service.Concretes;
 using Arac_Kiralama.Service.Exceptions.Types;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Arac_Kiralama.Controllers;
-
+[Authorize(Roles = "Admin")]
 public class ColorsController : CustomBaseController
 {
     private readonly IColorService _colorService;

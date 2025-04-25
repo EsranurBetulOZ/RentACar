@@ -1,3 +1,4 @@
+using Arac_Kiralama.Data;
 using Arac_Kiralama.Models.Entity;
 using Arac_Kiralama.Repository.Contexts;
 using Arac_Kiralama.Repository.Repositories.Abstracts;
@@ -18,18 +19,41 @@ namespace Arac_Kiralama
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<BaseDbContext>();
-            builder.Services.AddIdentity<User, IdentityRole>(opt =>
+
+            // Identity servislerini ekleyin
+            builder.Services.AddIdentity<User, IdentityRole>(options =>
             {
-                opt.User.RequireUniqueEmail = true;
-                opt.Password.RequireNonAlphanumeric = false;
-            }).AddEntityFrameworkStores<BaseDbContext>();
+                // Þifre gereksinimleri
+                options.Password.RequireDigit = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireNonAlphanumeric = true;
+                options.Password.RequiredLength = 8;
+
+                // Kullanýcý gereksinimleri
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddEntityFrameworkStores<BaseDbContext>()
+            .AddDefaultTokenProviders();
+
+            // Cookie ayarlarý
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.LogoutPath = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+            });
+
+        
             builder.Services.AddScoped<IBrandService,BrandService>();
             builder.Services.AddScoped<IBrandRepository,BrandRepository>();
             builder.Services.AddScoped<IColorService, ColorService>();
@@ -51,6 +75,10 @@ namespace Arac_Kiralama
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                await RoleInitializer.InitializeAsync(scope.ServiceProvider);
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

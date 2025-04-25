@@ -294,3 +294,435 @@ navbar*/
         transform: rotate(90deg);
     }
 
+/* Araç kartlarý için buton stilleri - Yeni kompakt tasarým */
+.car-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .car-btn i {
+        font-size: 0.9rem;
+    }
+
+    .car-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .car-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    }
+
+/* Detaylar butonu */
+.btn-outline-primary.car-btn {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(240,240,240,0.5));
+}
+
+    .btn-outline-primary.car-btn:hover {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+/* Düzenle butonu */
+.btn-outline-warning.car-btn {
+    color: #212529;
+    border-color: #ffc107;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,248,225,0.5));
+}
+
+    .btn-outline-warning.car-btn:hover {
+        background: linear-gradient(135deg, #ffc107, #ffca2c);
+        color: #212529;
+        border-color: #ffc107;
+    }
+
+
+
+/* Kirala butonu */
+.btn-success.car-btn {
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    color: white;
+    box-shadow: 0 3px 6px rgba(40, 167, 69, 0.2);
+}
+
+    .btn-success.car-btn:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+
+/* Giriþ Yap ve Kirala butonu */
+.btn-primary.car-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    color: white;
+    box-shadow: 0 3px 6px rgba(52, 152, 219, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-primary.car-btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+        transition: all 0.6s ease;
+    }
+
+    .btn-primary.car-btn:hover {
+        background: linear-gradient(135deg, #2980b9, #2471a3);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+
+        .btn-primary.car-btn:hover:before {
+            left: 100%;
+        }
+
+/* Butonlar arasýndaki boþluk */
+.d-flex.gap-2 {
+    gap: 6px !important;
+}
+
+
+
+    /* Mavi tema renkleri */
+:root {
+    --primary-color: #1e3c72;
+    --primary-light: #2a5298;
+    --primary-dark: #0c2461;
+    --secondary-color: #4a69bd;
+    --accent-color: #6a89cc;
+    --text-color: #333;
+    --light-color: #f8f9fa;
+}
+
+/* Form stilleri */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--primary-color);
+}
+
+.form-control:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* Kart stilleri */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* Animasyonlar */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.form-control {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Responsive ayarlamalar */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 2rem 1rem;
+    }
+}
+/* Araç kartlarý için buton stilleri - Yeni kompakt tasarým */
+.car-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+    .car-btn i {
+        font-size: 0.9rem;
+    }
+
+    .car-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .car-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+    }
+
+/* Detaylar butonu */
+.btn-outline-primary.car-btn {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(240,240,240,0.5));
+}
+
+    .btn-outline-primary.car-btn:hover {
+        background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        color: white;
+        border-color: var(--primary-color);
+    }
+
+/* Düzenle butonu */
+.btn-outline-warning.car-btn {
+    color: #212529;
+    border-color: #ffc107;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,248,225,0.5));
+}
+
+    .btn-outline-warning.car-btn:hover {
+        background: linear-gradient(135deg, #ffc107, #ffca2c);
+        color: #212529;
+        border-color: #ffc107;
+    }
+
+/* Sil butonu */
+.btn-outline-danger.car-btn {
+    color: #dc3545;
+    border-color: #dc3545;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(248,215,218,0.5));
+}
+
+    .btn-outline-danger.car-btn:hover {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border-color: #dc3545;
+    }
+
+/* Kirala butonu */
+.btn-success.car-btn {
+    background: linear-gradient(135deg, #28a745, #218838);
+    border: none;
+    color: white;
+    box-shadow: 0 3px 6px rgba(40, 167, 69, 0.2);
+}
+
+    .btn-success.car-btn:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    }
+
+/* Giriþ Yap ve Kirala butonu */
+.btn-primary.car-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    color: white;
+    box-shadow: 0 3px 6px rgba(52, 152, 219, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .btn-primary.car-btn:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+        transition: all 0.6s ease;
+    }
+
+    .btn-primary.car-btn:hover {
+        background: linear-gradient(135deg, #2980b9, #2471a3);
+        box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+    }
+
+        .btn-primary.car-btn:hover:before {
+            left: 100%;
+        }
+
+/* Butonlar arasýndaki boþluk */
+.d-flex.gap-2 {
+    gap: 6px !important;
+}
+/* Kayýt sayfasý için özel stiller */
+.register-page-wrapper {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+    .register-page-wrapper .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Araç görseli için konteyner */
+.car-image-container {
+    background: url('/images/car-register.png') center/cover;
+    height: 100%;
+    min-height: 600px;
+    position: relative;
+    border-top-left-radius: 0.375rem;
+    border-bottom-left-radius: 0.375rem;
+    overflow: hidden;
+}
+
+/* Araç görseli üzerindeki metin için overlay */
+.car-image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    width: 100%;
+    color: white;
+}
+
+    .car-image-overlay h3 {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .car-image-overlay p {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+/* Kayýt formu için kart */
+.register-page-wrapper .card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+/* Form elemanlarý için stiller */
+.register-page-wrapper .form-floating > .form-control:focus ~ label,
+.register-page-wrapper .form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--primary-color);
+}
+
+.register-page-wrapper .form-control:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 0.25rem rgba(42, 82, 152, 0.25);
+}
+
+.register-page-wrapper .btn-primary {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    border: none;
+    padding: 0.75rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .register-page-wrapper .btn-primary:hover {
+        background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 60, 114, 0.3);
+    }
+
+
+/* Admin kartlarý için özel stiller */
+.col-md-6.col-lg-6 .card {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+}
+
+.col-md-6.col-lg-6 .card-footer {
+    background-color: rgba(248, 249, 250, 0.5);
+}
+
+.col-md-6.col-lg-6 .card-img-top {
+    height: 220px !important;
+}
+
+.col-md-6.col-lg-6 .card-title {
+    font-size: 1.3rem;
+}
+
+/* Admin butonlarý için stil */
+.col-md-6.col-lg-6 .car-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+/* Fiyat etiketi için stil */
+.price-tag {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.price-tag .fw-bold.text-primary {
+    font-size: 1.25rem;
+    color: var(--primary-color) !important;
+    line-height: 1.2;
+}
+
+.price-tag .text-muted {
+    font-size: 0.75rem;
+}
+
+/* Responsive ayarlamalar */
+@media (max-width: 992px) {
+    .col-md-6.col-lg-6 .d-flex {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .col-md-6.col-lg-6 .d-flex.gap-2 {
+        flex-direction: row;
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 576px) {
+    .card-footer .d-flex {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .card-footer .d-flex.justify-content-between {
+        flex-direction: row;
+    }
+    
+    .price-tag {
+        margin-bottom: 8px;
+    }
+}

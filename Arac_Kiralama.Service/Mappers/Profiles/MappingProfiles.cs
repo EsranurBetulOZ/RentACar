@@ -3,6 +3,7 @@ using Arac_Kiralama.Models.Dtos.Cars;
 using Arac_Kiralama.Models.Dtos.Colors;
 using Arac_Kiralama.Models.Dtos.Fuels;
 using Arac_Kiralama.Models.Dtos.Transmissions;
+using Arac_Kiralama.Models.Dtos.Users;
 using Arac_Kiralama.Models.Entity;
 using AutoMapper;
 using System;
@@ -37,6 +38,12 @@ namespace Arac_Kiralama.Service.Mappers.Profiles
             CreateMap<Car, CarResponseDto>();
             CreateMap<CarAddRequestDto, Car>();
             CreateMap<CarUpdateRequestDto, Car>();
+
+            CreateMap<RegisterRequestDto, User>();
+            CreateMap<User, UserResponseDto>();
+         
+            //CreateMap<RegisterViewModel, RegisterRequestDto>();
+            //CreateMap<LoginViewModel, LoginRequestDto>();
 
         }
     }

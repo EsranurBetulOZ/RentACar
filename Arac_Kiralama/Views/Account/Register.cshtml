@@ -1,0 +1,114 @@
+﻿@model Arac_Kiralama.Models.Dtos.Users.RegisterRequestDto
+@{
+    ViewData["Title"] = "Kayıt Ol";
+    Layout = "_Layout";
+}
+
+<div class="register-page-wrapper">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-11 col-lg-10">
+                <div class="card shadow-lg border-0">
+                    <div class="row g-0">
+                        <!-- Sol taraf - Araç görseli (genişletildi) -->
+                        <div class="col-md-6 d-none d-md-block">
+                            <div class="car-image-container">
+                                <div class="car-image-overlay">
+                                    <h3 class="fw-bold">Araç Kiralama</h3>
+                                    <p>Hızlı, güvenli ve ekonomik araç kiralama deneyimi için hemen üye olun.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sağ taraf - Kayıt formu -->
+                        <div class="col-md-6">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="text-center mb-4">
+                                    <h2 class="fw-bold text-primary">Hesap Oluştur</h2>
+                                    <p class="text-muted">Araç kiralama hizmetimizden yararlanmak için kayıt olun</p>
+                                </div>
+
+                                <form asp-controller="Account" asp-action="Register" method="post">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input asp-for="FirstName" class="form-control" placeholder="Ad" required />
+                                                <label asp-for="FirstName">Ad</label>
+                                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input asp-for="LastName" class="form-control" placeholder="Soyad" required />
+                                                <label asp-for="LastName">Soyad</label>
+                                                <span asp-validation-for="LastName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Username" class="form-control" placeholder="Kullanıcı Adı" required />
+                                        <label asp-for="Username">Kullanıcı Adı</label>
+                                        <span asp-validation-for="Username" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Email" class="form-control" placeholder="E-posta" required type="email" />
+                                        <label asp-for="Email">E-posta</label>
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <input asp-for="Password" class="form-control" placeholder="Şifre" required type="password" />
+                                        <label asp-for="Password">Şifre</label>
+                                        <span asp-validation-for="Password" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input asp-for="Age" class="form-control" placeholder="Yaş" required type="number" min="18" max="100" />
+                                                <label asp-for="Age">Yaş</label>
+                                                <span asp-validation-for="Age" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon" />
+                                                <label asp-for="PhoneNumber">Telefon</label>
+                                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="acceptTerms" required />
+                                            <label class="form-check-label" for="acceptTerms">
+                                                Kullanım şartlarını ve gizlilik politikasını kabul ediyorum
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-primary btn-lg">Kayıt Ol</button>
+                                    </div>
+
+                                    <div class="text-center mt-4">
+                                        <p>Zaten hesabınız var mı? <a asp-controller="Account" asp-action="Login" class="text-primary fw-bold">Giriş Yap</a></p>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
