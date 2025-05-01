@@ -1,0 +1,47 @@
+﻿@model List<ReservationViewModel>
+
+@{
+    ViewData["Title"] = "Rezervasyonlarım";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-primary">Rezervasyonlar</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var reservation in Model)
+            {
+                <div class="col">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title text-dark fw-bold">@reservation.CarName</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Müşteri: </h6>
+
+                            <ul class="list-group list-group-flush mt-3">
+                                <li class="list-group-item">
+                                    <strong>Başlangıç Tarihi:</strong> @reservation.StartDate.ToString("dd.MM.yyyy")
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Bitiş Tarihi:</strong> @reservation.EndDate.ToString("dd.MM.yyyy")
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Toplam Tutar:</strong> @reservation.TotalPrice.ToString("C0", new System.Globalization.CultureInfo("tr-TR"))
+                                </li>
+                                <li class="list-group-item">
+                                    <strong>Durum:</strong> <span class="badge bg-info">@reservation.Status</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-4">
+            Henüz bir rezervasyon bulunmamaktadır.
+        </div>
+    }
+</div>

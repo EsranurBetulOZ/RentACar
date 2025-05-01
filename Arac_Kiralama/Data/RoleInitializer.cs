@@ -39,7 +39,7 @@ namespace Arac_Kiralama.Data
                     Email = adminEmail,
                     FirstName = "Admin",
                     LastName = "User",
-                    Age = 30,
+                    Age = 25,
                     EmailConfirmed = true
                 };
 

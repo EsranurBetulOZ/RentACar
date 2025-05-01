@@ -65,10 +65,10 @@
                     }
 
                     @* Kullanıcılar için menü öğeleri *@
-                    @if (SignInManager.IsSignedIn(User))
+                    @if (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"))
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Reservation" asp-action="MyReservations">
+                            <a class="nav-link" asp-area="" asp-controller="Reservations" asp-action="Index">
                                 <i class="bi bi-calendar-check"></i> Rezervasyonlarım
                             </a>
                         </li>
@@ -91,12 +91,14 @@
                                         <i class="bi bi-person"></i> Profilim
                                     </a>
                                 </li>
+                                @if (SignInManager.IsSignedIn(User) && !User.IsInRole("Admin"))
+                                {
                                 <li>
-                                    <a class="dropdown-item" asp-controller="Reservation" asp-action="MyReservations">
+                                    <a class="dropdown-item" asp-controller="Reservations" asp-action="Index">
                                         <i class="bi bi-calendar-check"></i> Rezervasyonlarım
                                     </a>
                                 </li>
-                               
+                                }
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
