@@ -35,18 +35,18 @@ public class CarsController : Controller
     }
 
     public async Task<IActionResult> Index(
-        string vitesTipi = null,
-        string yakitTipi = null,
-        string renk = null,
-        string marka = null,
-        decimal? minFiyat = null,
-        decimal? maxFiyat = null,
-        string siralamaKriteri = "fiyatArtan",
-        int sayfa = 1)
+       string vitesTipi = null,  // Changed from transmissionType
+    string yakitTipi = null,  // Changed from fuelType
+    string renk = null,       // Changed from color
+    string marka = null,      // Changed from brand
+    decimal? minFiyat = null, // Changed from minPrice
+    decimal? maxFiyat = null, // Changed from maxPrice
+    string siralamaKriteri = "fiyatArtan", // Changed from sortCriteria
+    int sayfa = 1)
     {
         // Filtreleme ve sayfalama ile araçları getir
         var (cars, totalCount) = await _carService.GetFilteredCarsAsync(
-            vitesTipi, yakitTipi, renk, marka, minFiyat, maxFiyat, siralamaKriteri, sayfa, 9);
+        vitesTipi, yakitTipi, renk, marka, minFiyat, maxFiyat, siralamaKriteri, sayfa, 9);
 
         // Dropdown listeleri için verileri getir
         var transmissions = await _carService.GetAllTransmissionsAsync();
@@ -54,15 +54,33 @@ public class CarsController : Controller
         var colors = await _carService.GetAllColorsAsync();
         var brands = await _carService.GetAllBrandsAsync();
 
-        // ViewModel oluştur
+        // Create SelectLists with "All" option
         var model = new CarFilterViewModel
         {
             Cars = cars,
-            TransmissionSelectList = new SelectList(transmissions),
-            FuelSelectList = new SelectList(fuels),
-            ColorSelectList = new SelectList(colors),
-            BrandSelectList = new SelectList(brands),
+            // Add "All" option to each SelectList
+            TransmissionSelectList = new SelectList(
+    new List<SelectListItem> { }
+    .Concat(transmissions.Select(t => new SelectListItem { Text = t, Value = t })),
+    "Value", "Text", vitesTipi),
 
+
+            FuelSelectList = new SelectList(
+                new List<SelectListItem> {  }
+                .Concat(fuels.Select(f => new SelectListItem { Text = f, Value = f })),
+                "Value", "Text", yakitTipi),
+
+            ColorSelectList = new SelectList(
+                new List<SelectListItem> {  }
+                .Concat(colors.Select(c => new SelectListItem { Text = c, Value = c })),
+                "Value", "Text", renk),
+
+            BrandSelectList = new SelectList(
+                new List<SelectListItem> { }
+                .Concat(brands.Select(b => new SelectListItem { Text = b, Value = b })),
+                "Value", "Text", marka),
+
+            // Rest of the properties remain the same
             SelectedTransmission = vitesTipi,
             SelectedFuel = yakitTipi,
             SelectedColor = renk,
@@ -70,7 +88,6 @@ public class CarsController : Controller
             SelectedMinPrice = minFiyat,
             SelectedMaxPrice = maxFiyat,
             SelectedSortCriteria = siralamaKriteri,
-
             CurrentPage = sayfa,
             TotalItems = totalCount
         };

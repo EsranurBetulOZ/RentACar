@@ -194,7 +194,7 @@
                                         {
                                             <!-- Normal kullanıcılar için Kirala butonu -->
                                             <div class="d-flex justify-content-end">
-                                                <a href="@Url.Action("New", "Reservation", new { carId = car.Id })" class="btn btn-success car-btn">
+                                                <a @* href="@Url.Action("New", "Reservation", new { carId = car.Id })" *@ class="btn btn-success car-btn">
                                                     <i class="bi bi-calendar-check"></i> Kirala
                                                 </a>
                                             </div>
@@ -280,7 +280,8 @@
     </div>
 </div>
 
-@section Scripts {
+
+   @section Scripts {
     <script>
         $(document).ready(function () {
             // Sıralama değiştiğinde formu gönder
@@ -291,13 +292,9 @@
 
             // Filtreleme formunu göndermeden önce sayfa değerini 1'e ayarla
             $("#filterForm").on("submit", function () {
-                $("#sayfa").val(1);
+                $("#sayfa").val(1); // Sayfa sıfırlanır
             });
-
-            // 3 saniye sonra başarı ve hata mesajlarını otomatik kapat
-            setTimeout(function () {
-                $(".alert").alert('close');
-            }, 3000);
         });
     </script>
 }
+

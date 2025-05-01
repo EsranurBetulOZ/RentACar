@@ -1,0 +1,32 @@
+﻿@model Arac_Kiralama.Models.Dtos.Cars.CarResponseDto
+@using Arac_Kiralama.Models.Dtos.Brands
+
+<div class="container mt-4">
+    <div class="card mb-4 shadow">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="card-img-top" style="height: 600px; object-fit: cover;" />
+        }
+        else
+        {
+            <img src="https://via.placeholder.com/350x200?text= @Model.Name" class="card-img-top" />
+        }
+
+        <div class="card-body">
+            <h5 class="card-title">@Model.Name</h5>
+
+            <table class="table table-bordered mt-3">
+                <tbody>
+                    <tr><th>Yakıt</th><td>@Model.FuelName</td></tr>
+                    <tr><th>Grubu</th><td>Belirtilmedi</td></tr>
+                    <tr><th>Kapı Sayısı</th><td>4</td></tr>
+                    <tr><th>Model</th><td>Belirtilmedi</td></tr>
+                    <tr><th>Model Yılı</th><td>Belirtilmedi</td></tr>
+                    <tr><th>Beygir Gücü</th><td>Belirtilmedi</td></tr>
+                    <tr><th>Motor Hacmi</th><td>Belirtilmedi</td></tr>
+                    <tr><th>Kasa Tipi</th><td>Belirtilmedi</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
