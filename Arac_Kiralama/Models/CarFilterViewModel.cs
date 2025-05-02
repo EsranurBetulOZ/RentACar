@@ -5,7 +5,7 @@ namespace Arac_Kiralama.Models
 {
     public class CarFilterViewModel
     {
-        // Araç listesi
+   
         public List<CarResponseDto> Cars { get; set; } = new List<CarResponseDto>();
 
         // Dropdown listeleri için SelectList'ler
@@ -23,7 +23,7 @@ namespace Arac_Kiralama.Models
         public decimal? SelectedMaxPrice { get; set; }
         public string SelectedSortCriteria { get; set; } = "fiyatArtan";
 
-        // Sıralama seçenekleri için
+     
         public List<SelectListItem> SortOptions => new List<SelectListItem>
         {
             new SelectListItem { Value = "fiyatArtan", Text = "Fiyat (Artan)", Selected = SelectedSortCriteria == "fiyatArtan" },
@@ -32,7 +32,7 @@ namespace Arac_Kiralama.Models
             new SelectListItem { Value = "kilometreAzalan", Text = "Kilometre (Azalan)", Selected = SelectedSortCriteria == "kilometreAzalan" }
         };
 
-        // Pagination için
+       
         public int CurrentPage { get; set; } = 1;
         public int PageSize { get; set; } = 9; // Sayfa başına 9 araç
         public int TotalItems { get; set; }

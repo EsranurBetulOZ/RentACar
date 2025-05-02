@@ -63,7 +63,7 @@ namespace Arac_Kiralama.Service.Concretes
 
         public async Task UpdateAsync(CarUpdateRequestDto carUpdateRequestDto)
         {
-            // Önce mevcut aracı getir
+           
             var existingCar = await carRepository.GetByIdAsync(carUpdateRequestDto.Id);
 
             if (existingCar == null)
@@ -71,7 +71,7 @@ namespace Arac_Kiralama.Service.Concretes
                 throw new NotFoundException("Güncellenecek araç bulunamadı.");
             }
 
-            // Temel özellikleri güncelle
+            
             existingCar.Name = carUpdateRequestDto.Name;
             existingCar.Kilometer = carUpdateRequestDto.Kilometer;
             existingCar.DailyPrice = carUpdateRequestDto.DailyPrice;
@@ -101,10 +101,10 @@ namespace Arac_Kiralama.Service.Concretes
             int page = 1,
             int pageSize = 9)
         {
-            // Tüm araçları getir
+        
             var query = await carRepository.GetAllWithIncludesAsync(enableTracking: false);
 
-            // Filtreleme işlemleri
+          
             var filteredCars = query.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(transmissionType))
